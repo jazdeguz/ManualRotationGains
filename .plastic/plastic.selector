@@ -1,0 +1,4 @@
+repository "ManualRotationGains 2026-09-28_15-44-18/ManualRotationGains@2475840405587@cloud"
+  path "/"
+    br "/main"
+    co "/main"
