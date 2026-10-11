@@ -3993,7 +3993,7 @@ MonoBehaviour:
   soundClips:
   - {fileID: 8300000, guid: bec1cfb465efc7a41bd5ccbac5b6f2a2, type: 3}
   minRadius: 40
-  maxRadius: 640
+  maxRadius: 400
   minHeight: 0
   maxHeight: 6
   minPause: 30
@@ -4030,23 +4030,50 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.019845963
-      value: 0.9545746
-      inSlope: -0.14040335
-      outSlope: -0.14040335
+      time: 0
+      value: 0.51327133
+      inSlope: -1.4882331
+      outSlope: -1.4882331
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.20472416
+      inWeight: 0
+      outWeight: 0.42644092
     - serializedVersion: 3
-      time: 0.94488525
-      value: 0
-      inSlope: -3.0115714
-      outSlope: -3.0115714
+      time: 0.31025237
+      value: 0.34425354
+      inSlope: -0.44908565
+      outSlope: -0.44908565
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.02504249
-      outWeight: 0.33333334
+      inWeight: 0.5451297
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.61609495
+      value: 0.2402649
+      inSlope: -0.62524897
+      outSlope: -0.62524897
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.8220642
+      value: 0.18341064
+      inSlope: -0.15631224
+      outSlope: -0.15631224
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.1
+      inSlope: -0.10003988
+      outSlope: -0.10003988
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4

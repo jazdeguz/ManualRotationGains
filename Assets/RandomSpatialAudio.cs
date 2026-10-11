@@ -33,10 +33,6 @@ public class RandomSpatialAudio : MonoBehaviour
         audioSource.loop = false;
         audioSource.spatialBlend = 1f;
         audioSource.dopplerLevel = 0f;
-        audioSource.volume = 1f;
-        audioSource.rolloffMode = AudioRolloffMode.Linear;
-        audioSource.minDistance = 40f;
-        audioSource.maxDistance = 1500f;
 
 
         if (playerHead == null ||
