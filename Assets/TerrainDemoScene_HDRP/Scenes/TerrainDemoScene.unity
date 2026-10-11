@@ -9671,7 +9671,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142241181060061, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241181060061, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142241181060061, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9703,7 +9707,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142241226085150, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241226085150, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142241226085150, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9735,7 +9743,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142241316034343, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241316034343, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142241316034343, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9767,7 +9779,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142241354730667, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241354730667, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142241354730667, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9799,7 +9815,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142241421274527, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241421274527, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142241421274527, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9831,7 +9851,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142241709043261, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241709043261, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142241709043261, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9860,6 +9884,10 @@ PrefabInstance:
     - target: {fileID: 257142241851313760, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_Name
       value: TerrainHigh
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241851313760, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 257142241851313763, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_RootOrder
@@ -9911,7 +9939,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142241893090615, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142241893090615, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142241893090615, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9943,7 +9975,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242105027309, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242105027309, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242105027309, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -9975,7 +10011,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242276785753, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242276785753, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242276785753, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -10007,7 +10047,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242311654879, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242311654879, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242311654879, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -10039,7 +10083,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242361213524, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242361213524, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242361213524, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -10071,7 +10119,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242431874012, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242431874012, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242431874012, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -10103,7 +10155,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242484871127, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242484871127, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242484871127, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -10135,7 +10191,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242807247216, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242807247216, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242807247216, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -10167,7 +10227,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142242937042229, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142242937042229, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142242937042229, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
@@ -10199,7 +10263,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 257142243187119943, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 200
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 257142243187119943, guid: f514be6126461c64eab6f02358f894f3, type: 3}
+      propertyPath: m_ShadowCastingMode
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 257142243187119943, guid: f514be6126461c64eab6f02358f894f3, type: 3}
       propertyPath: m_DetailObjectDensity
