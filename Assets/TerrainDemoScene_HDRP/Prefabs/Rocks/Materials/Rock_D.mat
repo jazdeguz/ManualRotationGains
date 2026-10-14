@@ -86,7 +86,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _EmissionEnabled: 0
     - _AORemapMax: 1
     - _AORemapMin: 0.43397397
     - _ATDistance: 1
@@ -155,6 +154,7 @@ Material:
     - _DstBlend: 0
     - _DstBlend2: 0
     - _DstBlendAlpha: 0
+    - _EmissionEnabled: 0
     - _EmissiveColorMode: 1
     - _EmissiveExposureWeight: 1
     - _EmissiveIntensity: 1

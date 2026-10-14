@@ -99,7 +99,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _EmissionEnabled: 0
     - Vector1_11138D6F: 1
     - Vector1_20c696dddd9b4ec3812508c4d9769d47: 1
     - Vector1_3413C06: 1
@@ -177,6 +176,7 @@ Material:
     - _DstBlend: 0
     - _DstBlend2: 0
     - _DstBlendAlpha: 0
+    - _EmissionEnabled: 0
     - _EmissiveColorMode: 1
     - _EmissiveExposureWeight: 1
     - _EmissiveIntensity: 1
