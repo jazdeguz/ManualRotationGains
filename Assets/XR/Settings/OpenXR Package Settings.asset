@@ -334,7 +334,7 @@ MonoBehaviour:
   m_symmetricProjection: 0
   systemSplashScreen: {fileID: 0}
   enableSystemKeyboard: 0
-  m_optimizeBufferDiscards: 1
+  m_optimizeBufferDiscards: 0
   lateLatchingMode: 0
   lateLatchingDebug: 0
   optimizeMultiviewRenderRegions: 0
@@ -426,7 +426,7 @@ MonoBehaviour:
     m_List: 00000000
   m_depthSubmissionMode: 0
   m_spacewarpMotionVectorTextureFormat: 0
-  m_optimizeBufferDiscards: 1
+  m_optimizeBufferDiscards: 0
   m_symmetricProjection: 0
   m_foveatedRenderingApi: 1
 --- !u!114 &-1110867895891511920
