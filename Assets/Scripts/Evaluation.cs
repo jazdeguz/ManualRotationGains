@@ -30,6 +30,11 @@ public class Evaluation : MonoBehaviour
         return outsideYaw;
     }
 
+    public void setYawOffset(float yaw)
+    {
+        offsetYaw = yaw - outsideYaw;
+    }
+    
     public Vector2 getPos()
     {
         return outsidePos;
