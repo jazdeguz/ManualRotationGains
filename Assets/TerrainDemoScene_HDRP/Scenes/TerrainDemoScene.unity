@@ -1065,15 +1065,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4390604387516112171, guid: bddde96586ad17d4490632b9a89409b2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -51.8
+      value: -51.65
       objectReference: {fileID: 0}
     - target: {fileID: 4390604387516112171, guid: bddde96586ad17d4490632b9a89409b2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -11.8
+      value: -20.41
       objectReference: {fileID: 0}
     - target: {fileID: 4390604387516112171, guid: bddde96586ad17d4490632b9a89409b2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 127.1
+      value: 128.34
       objectReference: {fileID: 0}
     - target: {fileID: 4390604387516112171, guid: bddde96586ad17d4490632b9a89409b2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -11897,6 +11897,10 @@ GameObject:
   - component: {fileID: 9000000000007}
   - component: {fileID: 9000000000006}
   - component: {fileID: 9000000000008}
+  - component: {fileID: 9000000000101}
+  - component: {fileID: 9000000000102}
+  - component: {fileID: 9000000000103}
+  - component: {fileID: 9000000000104}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Untagged
@@ -11972,7 +11976,7 @@ Transform:
   m_GameObject: {fileID: 9000000000001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -96.92, y: -19.26, z: 110.88}
+  m_LocalPosition: {x: -96.92, y: -20.42, z: 110.88}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12017,7 +12021,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9000000000001}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75b29b6c6428c984a8a73ffc2d58063b, type: 3}
+  m_Script: {fileID: 11500000, guid: 901c5a90323145fe919743e59b78ded1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Mediator: {fileID: 9000000000006}
@@ -12053,6 +12057,8 @@ MonoBehaviour:
     m_InputActionReference: {fileID: -8666952849799569744, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: {x: 0, y: 0}
+  maximumMultiplier: 2
+  releaseDeceleration: 2.1333332
 --- !u!1 &9000000000009
 GameObject:
   m_ObjectHideFlags: 0
@@ -12266,7 +12272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9000000000018
 Transform:
   m_ObjectHideFlags: 0
@@ -12721,6 +12727,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Controller Left
       objectReference: {fileID: 0}
+    - target: {fileID: 8758423527188247893, guid: 1392f805216c47742996d4742c80721c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13034,7 +13044,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9000000000037
 Transform:
   m_ObjectHideFlags: 0
@@ -14346,6 +14356,73 @@ Transform:
   - {fileID: 9000000000027}
   m_Father: {fileID: 9000000000005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9000000000101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d810b2bef1c54fc5a3be1587cc48276e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementMode: 1
+--- !u!114 &9000000000102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0944a4e3c6182e4bb462bbca27d70f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xrOrigin: {fileID: 9000000000004}
+  rotationPivot: {fileID: 9000000000005}
+  evaluation: {fileID: 9000000000103}
+--- !u!114 &9000000000103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de1616968d032c64096ed922bcb4fa03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RotationGain: 1
+  outsidePos: {x: 0, y: 0}
+  outsideYaw: 0
+  start_p: {x: 0, y: 0}
+  start_yaw: 0
+  resetPos: {x: 0, y: 0}
+  resetYaw: 0
+  offsetPos: {x: 0, y: 0}
+  offsetYaw: 0
+  insideUpdate: 0
+--- !u!114 &9000000000104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ab2bc4e4f14f77a48abfb846cbed29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnProvider: {fileID: 9000000000008}
+  degreesPerTick: 0.5
+  amplitude: 0.25
+  duration: 0.02
+  minimumTickInterval: 0.05
 --- !u!1 &9100000000001
 GameObject:
   m_ObjectHideFlags: 0

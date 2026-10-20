@@ -10,7 +10,14 @@ public class RedirectionController : MonoBehaviour
     public Evaluation evaluation;
 
     private bool initialized = false;
-    private Quaternion basePivotRotation;
+    private float previousHeadYaw;
+    private float accumulatedCorrection;
+
+    private void OnEnable()
+    {
+        if (initialized)
+            ResetRotationReference();
+    }
 
     private void Start()
     {
@@ -27,11 +34,7 @@ public class RedirectionController : MonoBehaviour
             return;
         }
 
-        basePivotRotation = rotationPivot.localRotation;
-
-        // Initialize the starting yaw in radians.
-        evaluation.outsideYaw = GetCameraYawRadians();
-        evaluation.start_yaw = evaluation.getYaw();
+        ResetRotationReference();
 
         initialized = true;
     }
@@ -62,34 +65,29 @@ public class RedirectionController : MonoBehaviour
 
     private void UpdateRotationGain(float currentYaw)
     {
-        // Calculate head rotation relative to the starting reference.
-        float diff = periodicMinusPeriodic(
+        // Only amplify physical head motion since the previous frame.
+        // Joystick turns change the rig, not the camera's tracked local yaw.
+        float headDelta = periodicMinusPeriodic(
             currentYaw,
-            evaluation.start_yaw
+            previousHeadYaw
         );
+        previousHeadYaw = currentYaw;
 
-        // Preserve the original gain equation.
-        float yaw = evaluation.start_yaw
-                    + diff * evaluation.RotationGain;
+        float correction = headDelta * (evaluation.RotationGain - 1f);
 
-        // Extra virtual rotation beyond the physical head rotation.
-        float correction = periodicMinusPeriodic(
-            yaw,
-            currentYaw
+        // Compose with existing joystick rotation, around the head so an
+        // off-center player does not orbit the rig origin.
+        rotationPivot.RotateAround(
+            xrOrigin.Camera.transform.position,
+            Vector3.up,
+            correction * Mathf.Rad2Deg
         );
-
-        // Apply the extra rotation to the parent pivot.
-        rotationPivot.localRotation =
-            basePivotRotation *
-            Quaternion.Euler(
-                0f,
-                correction * Mathf.Rad2Deg,
-                0f
-            );
+        accumulatedCorrection = periodicMinusPeriodic(
+            accumulatedCorrection + correction, 0f);
 
         // Keep the Evaluation correction fields up to date.
         evaluation.reset();
-        evaluation.setYawOffset(yaw);
+        evaluation.setYawOffset(currentYaw + accumulatedCorrection);
     }
 
     private float periodicMinusPeriodic(float a, float b)
@@ -118,6 +116,8 @@ public class RedirectionController : MonoBehaviour
         evaluation.outsideYaw = GetCameraYawRadians();
         evaluation.start_yaw = evaluation.getYaw();
 
-        basePivotRotation = rotationPivot.localRotation;
+        previousHeadYaw = evaluation.outsideYaw;
+        accumulatedCorrection = 0f;
+        evaluation.reset();
     }
 }
