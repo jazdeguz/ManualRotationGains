@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c016b45ec509c004bb3ddb549f4f8edb
+timeCreated: 1620053420
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Materials/road_props/M_grnd_asph.mat
+  uploadId: 432673

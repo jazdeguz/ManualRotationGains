@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e26ab9b14021ea34e8b777635b9d52e8
+timeCreated: 1449320167
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Prefabs/road_props/blboard.prefab
+  uploadId: 432673

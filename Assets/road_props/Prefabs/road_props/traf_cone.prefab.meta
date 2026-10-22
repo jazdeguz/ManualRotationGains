@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 36984270093f19c4b887e5dcb2c09b69
+timeCreated: 1449320371
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Prefabs/road_props/traf_cone.prefab
+  uploadId: 432673

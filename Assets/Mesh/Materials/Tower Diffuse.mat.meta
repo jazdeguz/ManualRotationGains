@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e48e0449ea467af4fbe96ab54edac229
+timeCreated: 1467721794
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 66495
+  packageName: Ruined Tower Free
+  packageVersion: 1.0
+  assetPath: Assets/Mesh/Materials/Tower Diffuse.mat
+  uploadId: 723994

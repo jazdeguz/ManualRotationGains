@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 06be59761b225ff4e8e85e7aeb4ddf29
+timeCreated: 1464884231
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Materials/road_props/M_brl_empty.mat
+  uploadId: 432673

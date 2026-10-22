@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ff652fc2ce4b78245894d31b7614e405
+timeCreated: 1449162080
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Materials/road_props/M_blboard.mat
+  uploadId: 432673

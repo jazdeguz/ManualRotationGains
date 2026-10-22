@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 50eccc57536b1ac4692cbab7e955005d
+timeCreated: 1449319645
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Prefabs/road_props/brl_empty_old.prefab
+  uploadId: 432673

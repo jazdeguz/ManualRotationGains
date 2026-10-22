@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8d6f4b13824dffc43949726aaed3c3de
+timeCreated: 1620033251
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Scenes/road_props.unity
+  uploadId: 432673

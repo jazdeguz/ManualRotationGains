@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d76e16fec7b6a1b498390b590cf7022e
+timeCreated: 1465386551
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 51319
+  packageName: Road Props Pack
+  packageVersion: 1.0
+  assetPath: Assets/road_props/Prefabs/road_props/brl_bio.prefab
+  uploadId: 432673
