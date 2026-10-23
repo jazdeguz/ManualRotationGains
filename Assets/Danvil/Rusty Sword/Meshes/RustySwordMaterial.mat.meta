@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6540ba89d292b8648be710b3bba4f946
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 315378
+  packageName: Rusty Sword
+  packageVersion: 1.0.0
+  assetPath: Assets/Danvil/Rusty Sword/Meshes/RustySwordMaterial.mat
+  uploadId: 745654

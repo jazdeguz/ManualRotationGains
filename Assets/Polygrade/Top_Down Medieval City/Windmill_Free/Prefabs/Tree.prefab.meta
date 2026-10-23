@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 586534c0f9a745b4086c007888993b85
+timeCreated: 1493581411
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 89489
+  packageName: Medieval Windmill
+  packageVersion: 1.0
+  assetPath: Assets/Polygrade/Top_Down Medieval City/Windmill_Free/Prefabs/Tree.prefab
+  uploadId: 177479

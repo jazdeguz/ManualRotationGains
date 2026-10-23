@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 418dcd25f18958a4ba01f14dbcb9a16f
+timeCreated: 1493581227
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 89489
+  packageName: Medieval Windmill
+  packageVersion: 1.0
+  assetPath: Assets/Polygrade/Top_Down Medieval City/Windmill_Free/Fbxs_Textures_Mats/Materials/WindmillAtlas.mat
+  uploadId: 177479

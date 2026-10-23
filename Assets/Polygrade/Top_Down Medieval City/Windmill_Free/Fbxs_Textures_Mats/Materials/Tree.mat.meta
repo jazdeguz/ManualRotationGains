@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: aa8e6ae99fa684c418f9d7e9fed34723
+timeCreated: 1493580780
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 89489
+  packageName: Medieval Windmill
+  packageVersion: 1.0
+  assetPath: Assets/Polygrade/Top_Down Medieval City/Windmill_Free/Fbxs_Textures_Mats/Materials/Tree.mat
+  uploadId: 177479
