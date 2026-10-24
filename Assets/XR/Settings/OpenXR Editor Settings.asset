@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Keys: 0100000007000000
   Values:
-  - featureSets:
-    - com.meta.openxr.featureset.metaxr
+  - featureSets: []
   - featureSets:
     - com.meta.openxr.featureset.metaxr
   m_vulkanAdditionalGraphicsQueue: 0
