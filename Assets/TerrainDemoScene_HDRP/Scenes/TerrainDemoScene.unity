@@ -15811,7 +15811,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d810b2bef1c54fc5a3be1587cc48276e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementMode: 1
+  movementMode: 0
+  turnProvider: {fileID: 0}
+  leftHandRotationInput: {fileID: 0}
+  rightHandRotationInput: {fileID: 0}
 --- !u!114 &9000000000102
 MonoBehaviour:
   m_ObjectHideFlags: 0
