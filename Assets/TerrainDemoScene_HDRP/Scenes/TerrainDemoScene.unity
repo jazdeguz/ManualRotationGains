@@ -13368,6 +13368,7 @@ GameObject:
   - component: {fileID: 9000000000102}
   - component: {fileID: 9000000000103}
   - component: {fileID: 9000000000104}
+  - component: {fileID: 9000000000105}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Untagged
@@ -15839,6 +15840,8 @@ MonoBehaviour:
   turnProvider: {fileID: 0}
   leftHandRotationInput: {fileID: 0}
   rightHandRotationInput: {fileID: 0}
+  redirectionController: {fileID: 9000000000102}
+  continuousRotation: {fileID: 9000000000105}
 --- !u!114 &9000000000102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15893,6 +15896,21 @@ MonoBehaviour:
   amplitude: 0.25
   duration: 0.02
   minimumTickInterval: 0.05
+--- !u!114 &9000000000105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000000000001}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b06fbb845be4a03a0d046b67690b3f9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  xrOrigin: {fileID: 9000000000004}
+  rotationPivot: {fileID: 9000000000005}
+  evaluation: {fileID: 9000000000103}
 --- !u!1 &9100000000001
 GameObject:
   m_ObjectHideFlags: 0
