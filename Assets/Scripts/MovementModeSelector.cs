@@ -7,9 +7,11 @@ public class MovementModeSelector : MonoBehaviour
     public enum MovementMode
     {
         [InspectorName("Use Rotation")]
-        UseRotation,
+        UseRotation = 0,
         [InspectorName("Use Joystick")]
-        UseJoystick
+        UseJoystick = 1,
+        [InspectorName("Continuous Rotation")]
+        ContinuousRotation = 2
     }
 
     public MovementMode movementMode = MovementMode.UseJoystick;
@@ -17,6 +19,8 @@ public class MovementModeSelector : MonoBehaviour
     public ContinuousTurnProvider turnProvider;
     public ControllerRotationTurnInput leftHandRotationInput;
     public ControllerRotationTurnInput rightHandRotationInput;
+    public RedirectionController redirectionController;
+    public ContinuousRotation continuousRotation;
 
     private MovementMode appliedMode;
 
@@ -39,6 +43,10 @@ public class MovementModeSelector : MonoBehaviour
             leftHandRotationInput = GetRotationInput(XRNode.LeftHand);
         if (rightHandRotationInput == null)
             rightHandRotationInput = GetRotationInput(XRNode.RightHand);
+        if (redirectionController == null)
+            redirectionController = GetComponent<RedirectionController>();
+        if (continuousRotation == null)
+            continuousRotation = GetComponent<ContinuousRotation>();
 
         ApplyMode();
     }
@@ -50,6 +58,15 @@ public class MovementModeSelector : MonoBehaviour
 
         turnProvider.leftHandTurnInput.bypass = null;
         turnProvider.rightHandTurnInput.bypass = null;
+
+        if (appliedMode == MovementMode.ContinuousRotation)
+        {
+            if (continuousRotation != null)
+                continuousRotation.enabled = false;
+            if (redirectionController != null)
+                redirectionController.enabled = true;
+            turnProvider.enabled = true;
+        }
     }
 
     private void Update()
@@ -68,13 +85,31 @@ public class MovementModeSelector : MonoBehaviour
 
     private void ApplyMode()
     {
+        bool useContinuous = movementMode == MovementMode.ContinuousRotation;
+        if (useContinuous && continuousRotation == null)
+        {
+            Debug.LogError("MovementModeSelector: Assign a Continuous Rotation component.");
+            return;
+        }
+
         appliedMode = movementMode;
+
+        // The original head-gain system owns the pivot exclusively. Stop the
+        // manual provider (including release coasting) before enabling it.
+        if (continuousRotation != null && !useContinuous)
+            continuousRotation.enabled = false;
+        if (redirectionController != null)
+            redirectionController.enabled = !useContinuous;
+        turnProvider.enabled = !useContinuous;
 
         bool useRotation = movementMode == MovementMode.UseRotation;
         turnProvider.leftHandTurnInput.bypass =
             useRotation ? leftHandRotationInput : null;
         turnProvider.rightHandTurnInput.bypass =
             useRotation ? rightHandRotationInput : null;
+
+        if (useContinuous)
+            continuousRotation.enabled = true;
     }
 
     private ControllerRotationTurnInput GetRotationInput(XRNode hand)
