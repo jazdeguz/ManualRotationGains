@@ -6,11 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 381dc31528d242549827a04d5450736e
+  - enabled: 1
     path: Assets/TerrainDemoScene_HDRP/Scenes/TerrainDemoScene.unity
     guid: 9a18cc5d35536fd428eb6e90b3402589
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    guid: 22873103c00712545843118d85efefb1
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 09ae157453e567841af0110bfdf3d693, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
