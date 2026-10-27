@@ -16,6 +16,19 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
 
     private float angularVelocity;
 
+    public void SetMaximumMultiplier(float value)
+    {
+        maximumMultiplier = Mathf.Max(1f, value);
+        ClampAngularVelocity();
+        CurrentMultiplier = Mathf.Min(CurrentMultiplier, maximumMultiplier);
+    }
+
+    private void ClampAngularVelocity()
+    {
+        float limit = Mathf.Abs(turnSpeed) * Mathf.Max(1f, maximumMultiplier);
+        angularVelocity = Mathf.Clamp(angularVelocity, -limit, limit);
+    }
+
     protected override void OnDisable()
     {
         CurrentMultiplier = 1f;
@@ -27,6 +40,9 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
     {
         if (Time.deltaTime <= 0f)
             return 0f;
+
+        // Also enforce Inspector changes before integrating release coasting.
+        ClampAngularVelocity();
 
         // The base provider combines both sticks. Keep their combined input
         // within a single stick's range so the configured maximum is respected.

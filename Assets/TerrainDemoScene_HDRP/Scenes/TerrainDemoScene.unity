@@ -13370,6 +13370,7 @@ GameObject:
   - component: {fileID: 9000000000104}
   - component: {fileID: 9000000000105}
   - component: {fileID: 9000000000106}
+  - component: {fileID: 9000000000107}
   m_Layer: 0
   m_Name: XR Origin (VR)
   m_TagString: Untagged
@@ -17631,3 +17632,18 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   holdDuration: 2
+--- !u!114 &9000000000107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8384ac7ba9ac45da81a96c41e35a614e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  step: 0.5
+  minimum: 1
+  maximum: 8
