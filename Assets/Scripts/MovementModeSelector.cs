@@ -24,6 +24,14 @@ public class MovementModeSelector : MonoBehaviour
 
     private MovementMode appliedMode;
 
+    private void Awake()
+    {
+        // Read once, before OnEnable applies the mode. Direct scene launches
+        // retain the Inspector setting when no menu choice has been made.
+        if (MovementSessionSettings.HasSelection)
+            movementMode = MovementSessionSettings.SelectedMode;
+    }
+
     private void OnEnable()
     {
         if (turnProvider == null)

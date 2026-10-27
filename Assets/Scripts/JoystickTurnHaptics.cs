@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion;
@@ -20,6 +22,52 @@ public class JoystickTurnHaptics : MonoBehaviour
     private bool steppedThisFrame;
     private bool tickLeftHand;
     private bool tickRightHand;
+    private readonly Queue<(XRNode hand, int pulses)> adjustments = new Queue<(XRNode, int)>();
+    private Coroutine adjustmentRoutine;
+    private bool adjustmentActive;
+    private XRNode adjustmentHand;
+
+    public void QueueAdjustment(XRNode hand, bool increase)
+    {
+        if (!isActiveAndEnabled) return;
+        adjustments.Enqueue((hand, increase ? 2 : 1));
+        if (adjustmentRoutine == null)
+            adjustmentRoutine = StartCoroutine(PlayAdjustments());
+    }
+
+    private IEnumerator PlayAdjustments()
+    {
+        adjustmentActive = true;
+        // Separate feedback from any turning tick that is already playing.
+        yield return new WaitForSecondsRealtime(Mathf.Max(duration, 0.02f) + 0.1f);
+        while (adjustments.Count > 0)
+        {
+            var request = adjustments.Dequeue();
+            adjustmentHand = request.hand;
+            for (int pulse = 0; pulse < request.pulses; pulse++)
+            {
+                SendImpulse(request.hand, 0.5f, 0.07f);
+                yield return new WaitForSecondsRealtime(0.17f);
+            }
+            yield return new WaitForSecondsRealtime(0.15f);
+        }
+        ResetTicks();
+        adjustmentActive = false;
+        adjustmentRoutine = null;
+    }
+
+    public void CancelAdjustment()
+    {
+        if (adjustmentRoutine != null)
+        {
+            StopCoroutine(adjustmentRoutine);
+            var device = InputDevices.GetDeviceAtXRNode(adjustmentHand);
+            if (device.isValid) device.StopHaptics();
+        }
+        adjustmentRoutine = null;
+        adjustmentActive = false;
+        adjustments.Clear();
+    }
 
     private void OnEnable()
     {
@@ -32,6 +80,7 @@ public class JoystickTurnHaptics : MonoBehaviour
 
     private void OnDisable()
     {
+        CancelAdjustment();
         if (turnProvider != null)
             turnProvider.afterStepLocomotion -= OnTurnApplied;
         ResetTicks();
@@ -55,7 +104,7 @@ public class JoystickTurnHaptics : MonoBehaviour
 
     private void OnTurnApplied(LocomotionProvider provider)
     {
-        if (!turnProvider.isActiveAndEnabled)
+        if (!turnProvider.isActiveAndEnabled || adjustmentActive)
             return;
 
         // This callback runs only after the joystick provider's queued turn
@@ -92,14 +141,18 @@ public class JoystickTurnHaptics : MonoBehaviour
 
     private void SendTick(XRNode hand)
     {
+        SendImpulse(hand, Mathf.Clamp01(amplitude), Mathf.Max(0.001f, duration));
+    }
+
+    private static void SendImpulse(XRNode hand, float strength, float seconds)
+    {
         // Resolve on each tick so reconnecting a controller needs no restart.
         InputDevice device = InputDevices.GetDeviceAtXRNode(hand);
         if (device.isValid &&
             device.TryGetHapticCapabilities(out HapticCapabilities capabilities) &&
             capabilities.supportsImpulse && capabilities.numChannels > 0)
         {
-            device.SendHapticImpulse(0, Mathf.Clamp01(amplitude),
-                Mathf.Max(0.001f, duration));
+            device.SendHapticImpulse(0, strength, seconds);
         }
     }
 }
