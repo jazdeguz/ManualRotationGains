@@ -23,7 +23,7 @@ public static class ContinuousRotationValidation
     {
         try
         {
-            EditorSceneManager.OpenScene("Assets/TerrainDemoScene_HDRP/Scenes/TerrainDemoScene.unity");
+            EditorSceneManager.OpenScene(MainMenuController.GameplayScenePath);
             var saved = UnityEngine.Object.FindFirstObjectByType<MovementModeSelector>();
             Check(saved != null && saved.movementMode == MovementModeSelector.MovementMode.UseJoystick,
                 "Scene default changed.");

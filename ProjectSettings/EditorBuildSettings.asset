@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 381dc31528d242549827a04d5450736e
   - enabled: 1
+    path: Assets/CompactEnvironment/TerrainDemoScene_Compact.unity
+    guid: d55d073739a74d11826bb61ecb9a7c9a
+  - enabled: 0
     path: Assets/TerrainDemoScene_HDRP/Scenes/TerrainDemoScene.unity
     guid: 9a18cc5d35536fd428eb6e90b3402589
   - enabled: 0

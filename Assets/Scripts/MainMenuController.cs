@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
-    public const string GameplayScenePath = "Assets/TerrainDemoScene_HDRP/Scenes/TerrainDemoScene.unity";
+    public const string GameplayScenePath = "Assets/CompactEnvironment/TerrainDemoScene_Compact.unity";
 
     [SerializeField] private Button rotationButton;
     [SerializeField] private Button joystickButton;
