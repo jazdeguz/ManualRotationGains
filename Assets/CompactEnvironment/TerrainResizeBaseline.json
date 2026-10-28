@@ -1,0 +1,251 @@
+{
+    "version": 1,
+    "anchor": {
+        "x": -100.43719482421875,
+        "y": -22.091758728027345,
+        "z": 112.43278503417969
+    },
+    "tiles": [
+        {
+            "guid": "6bf8cb4ed87245599c8b15b819d403c0",
+            "position": {
+                "x": -2000.0,
+                "y": -40.0,
+                "z": -2000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "b7d3f2166f8f47d1858e8c6796ab8450",
+            "position": {
+                "x": -2000.0,
+                "y": -40.0,
+                "z": -1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "25f670c62f394dc18056f36d3d6b673d",
+            "position": {
+                "x": -2000.0,
+                "y": -40.0,
+                "z": 0.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "dcb587a477aa4c6695cc6e7b98ebcef6",
+            "position": {
+                "x": -2000.0,
+                "y": -40.0,
+                "z": 1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "c8377820b6ae44fdbb0bd8cc33c36a3b",
+            "position": {
+                "x": -1000.0,
+                "y": -40.0,
+                "z": -2000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "5cfeffdd0c62412cbc4ea1db4bc15c0d",
+            "position": {
+                "x": -1000.0,
+                "y": -40.0,
+                "z": -1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 42
+        },
+        {
+            "guid": "ddd29b27de9a42daac92a3c5f5e0a11a",
+            "position": {
+                "x": -1000.0,
+                "y": -40.0,
+                "z": 0.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 922
+        },
+        {
+            "guid": "1c6272a335aa4532a431aeec4f6f3f50",
+            "position": {
+                "x": -1000.0,
+                "y": -40.0,
+                "z": 1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "eaeaa431e0404ec0a33317ecc6544c4c",
+            "position": {
+                "x": 0.0,
+                "y": -40.0,
+                "z": -2000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "7f108b8f170e4ad9a31bf694bb817afc",
+            "position": {
+                "x": 0.0,
+                "y": -40.0,
+                "z": -1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "dfaa32a0b16642539d5285925156d3ed",
+            "position": {
+                "x": 0.0,
+                "y": -40.0,
+                "z": 0.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 50
+        },
+        {
+            "guid": "f748828fd8e64b41bec95bd7abf6d5d6",
+            "position": {
+                "x": 0.0,
+                "y": -40.0,
+                "z": 1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "2142d640f156470b8ad0b317baf73daf",
+            "position": {
+                "x": 1000.0,
+                "y": -40.0,
+                "z": -2000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "0ae49fe8fe834cbd841991bbdc130ac0",
+            "position": {
+                "x": 1000.0,
+                "y": -40.0,
+                "z": -1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "02b30747a0fa419b89572b9286e532cb",
+            "position": {
+                "x": 1000.0,
+                "y": -40.0,
+                "z": 0.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        },
+        {
+            "guid": "672b33d49e7a4c4eaab7023a13708aee",
+            "position": {
+                "x": 1000.0,
+                "y": -40.0,
+                "z": 1000.0
+            },
+            "size": {
+                "x": 1000.0,
+                "y": 800.0,
+                "z": 1000.0
+            },
+            "heightmapResolution": 2049,
+            "treeCount": 0
+        }
+    ],
+    "seamError": 0.0
+}

@@ -15428,7 +15428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xrOrigin: {fileID: 9000000000004}
-  rotationPivot: {fileID: 9000000000005}
+  rotationPivot: {fileID: 9000000000023}
   evaluation: {fileID: 9000000000103}
 --- !u!114 &9000000000106
 MonoBehaviour:

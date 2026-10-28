@@ -12,6 +12,8 @@ public static class ContinuousRotationValidation
     private const string Key = "ContinuousRotationValidation.Running";
     private static MovementModeSelector selector;
     private static Transform head;
+    private static Transform pivot;
+    private static AcceleratingTurnProvider turn;
     private static int stage, frames;
 
     static ContinuousRotationValidation()
@@ -23,7 +25,7 @@ public static class ContinuousRotationValidation
     {
         try
         {
-            EditorSceneManager.OpenScene("Assets/TerrainDemoScene_HDRP/Scenes/TerrainDemoScene.unity");
+            EditorSceneManager.OpenScene(MainMenuController.GameplayScenePath);
             var saved = UnityEngine.Object.FindFirstObjectByType<MovementModeSelector>();
             Check(saved != null && saved.movementMode == MovementModeSelector.MovementMode.UseJoystick,
                 "Scene default changed.");
@@ -58,9 +60,12 @@ public static class ContinuousRotationValidation
             var root = new GameObject("Rotation validation rig");
             root.SetActive(false);
             var origin = root.AddComponent<XROrigin>();
+            pivot = new GameObject("Camera Rotation Pivot").transform;
+            pivot.SetParent(root.transform, false);
             var camera = new GameObject("Head").AddComponent<Camera>();
             head = camera.transform;
-            head.SetParent(root.transform, false);
+            head.SetParent(pivot, false);
+            head.localPosition = new Vector3(0.4f, 1.6f, -0.2f);
             origin.Camera = camera;
             origin.CameraFloorOffsetObject = root;
             var evaluation = root.AddComponent<Evaluation>();
@@ -71,11 +76,13 @@ public static class ContinuousRotationValidation
             redirection.evaluation = evaluation;
             var continuous = root.AddComponent<ContinuousRotation>();
             continuous.xrOrigin = origin;
-            continuous.rotationPivot = root.transform;
+            continuous.rotationPivot = pivot;
             continuous.evaluation = evaluation;
             continuous.enabled = false;
             root.AddComponent<LocomotionMediator>();
-            var turn = root.AddComponent<AcceleratingTurnProvider>();
+            turn = root.AddComponent<AcceleratingTurnProvider>();
+            turn.turnSpeed = 2f;
+            turn.maximumMultiplier = 8f;
             selector = root.AddComponent<MovementModeSelector>();
             selector.turnProvider = turn;
             root.SetActive(true);
@@ -95,44 +102,43 @@ public static class ContinuousRotationValidation
             {
                 case 0:
                     selector.transform.localRotation = Quaternion.Euler(0f, 30f, 0f);
-                    head.localRotation = Quaternion.Euler(0f, 350f, 0f);
                     selector.SetMovementMode(MovementModeSelector.MovementMode.ContinuousRotation);
-                    Check(selector.continuousRotation.enabled && !selector.redirectionController.enabled &&
-                        !selector.turnProvider.enabled, "Continuous mode has competing turn components.");
+                    CheckOriginalMode();
+                    CheckTurn(Vector2.right, 2f * Time.deltaTime);
+                    CheckTurn(Vector2.left, -2f * Time.deltaTime);
+                    CheckTurn(new Vector2(0.5f, 0f), Time.deltaTime);
+                    CheckTurn(Vector2.zero, 0f);
+                    Check(turn.CurrentMultiplier == 1f, "Original turning used the manual multiplier.");
+                    head.localRotation = Quaternion.Euler(0f, 90f, 0f);
                     break;
                 case 1:
-                    CheckYaw(30f);
-                    head.localRotation = Quaternion.Euler(0f, 10f, 0f);
+                    Check(Mathf.Abs(Mathf.DeltaAngle(selector.transform.eulerAngles.y, 30f)) < 0.01f,
+                        "Physical head motion redirected the rig in original joystick mode.");
+                    Check(Mathf.Abs(Mathf.DeltaAngle(pivot.localEulerAngles.y, 0f)) < 0.01f,
+                        "Physical head motion redirected the camera pivot.");
+                    selector.SetMovementMode(MovementModeSelector.MovementMode.UseRotation);
+                    Check(!turn.UseOriginalContinuousTurning && selector.redirectionController.enabled,
+                        "Tilt mode did not restore enhanced turning.");
+                    Check(ReferenceEquals(turn.leftHandTurnInput.bypass, selector.leftHandRotationInput) &&
+                        ReferenceEquals(turn.rightHandTurnInput.bypass, selector.rightHandRotationInput),
+                        "Tilt input bypass was not restored.");
+                    CheckTurn(Vector2.right, 16f * Time.deltaTime);
+                    Check(ReadTurn(Vector2.zero) > 0f, "Enhanced turning lost release coasting.");
+                    selector.SetMovementMode(MovementModeSelector.MovementMode.ContinuousRotation);
+                    CheckOriginalMode();
+                    CheckTurn(Vector2.zero, 0f);
+                    Check(turn.maximumMultiplier == 8f, "Original mode overwrote the saved manual maximum.");
                     break;
                 case 2:
-                    CheckYaw(50f); // 20 physical degrees add 20 extra degrees at gain 2.
-                    selector.SetMovementMode(MovementModeSelector.MovementMode.UseRotation);
-                    Check(!selector.continuousRotation.enabled && selector.redirectionController.enabled &&
-                        selector.turnProvider.enabled, "Manual turn components were not restored.");
-                    Check(selector.turnProvider.leftHandTurnInput.bypass == selector.leftHandRotationInput &&
-                        selector.turnProvider.rightHandTurnInput.bypass == selector.rightHandRotationInput,
-                        "Controller rotation inputs were not restored.");
                     selector.SetMovementMode(MovementModeSelector.MovementMode.UseJoystick);
-                    Check(selector.turnProvider.leftHandTurnInput.bypass == null &&
-                        selector.turnProvider.rightHandTurnInput.bypass == null, "Joystick bypass was not cleared.");
-                    head.localRotation = Quaternion.Euler(0f, 50f, 0f);
+                    Check(!turn.UseOriginalContinuousTurning && turn.leftHandTurnInput.bypass == null &&
+                        turn.rightHandTurnInput.bypass == null, "Joystick mode was not restored.");
                     selector.SetMovementMode(MovementModeSelector.MovementMode.ContinuousRotation);
-                    break;
-                case 3:
-                    CheckYaw(50f); // Re-entering takes a fresh reference without snapping.
-                    head.localRotation = Quaternion.Euler(0f, 70f, 0f);
-                    break;
-                case 4:
-                    CheckYaw(70f);
                     selector.enabled = false;
-                    Check(!selector.continuousRotation.enabled && selector.turnProvider.enabled &&
-                        selector.redirectionController.enabled, "Disabling selector stranded continuous mode.");
+                    Check(!turn.UseOriginalContinuousTurning && selector.redirectionController.enabled,
+                        "Disabling selector did not restore the manual provider.");
                     selector.enabled = true;
-                    Check(selector.continuousRotation.enabled && !selector.turnProvider.enabled,
-                        "Re-enabling selector did not restore the selected mode.");
-                    break;
-                default:
-                    CheckYaw(70f);
+                    CheckOriginalMode();
                     Finish(null);
                     break;
             }
@@ -140,10 +146,24 @@ public static class ContinuousRotationValidation
         catch (Exception e) { Finish(e); }
     }
 
-    private static void CheckYaw(float expected)
+    private static void CheckOriginalMode()
     {
-        Check(Mathf.Abs(Mathf.DeltaAngle(selector.transform.localEulerAngles.y, expected)) < 0.01f,
-            $"Expected pivot yaw {expected}, got {selector.transform.localEulerAngles.y}.");
+        Check(turn.enabled && turn.UseOriginalContinuousTurning &&
+            !selector.continuousRotation.enabled && !selector.redirectionController.enabled,
+            "Original mode has incorrect or competing turn components.");
+        Check(turn.leftHandTurnInput.bypass == null && turn.rightHandTurnInput.bypass == null,
+            "Original mode must read the joystick, not controller tilt.");
+    }
+
+    private static float ReadTurn(Vector2 input) => (float)typeof(AcceleratingTurnProvider)
+        .GetMethod("GetTurnAmount", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+        .Invoke(turn, new object[] { input });
+
+    private static void CheckTurn(Vector2 input, float expected)
+    {
+        Check(Time.deltaTime > 0f, "Turn tests require a running Play Mode frame.");
+        float actual = ReadTurn(input);
+        Check(Mathf.Abs(actual - expected) < 0.00001f, $"Expected {expected}, got {actual}.");
     }
 
     private static void Check(bool condition, string message)
@@ -155,7 +175,7 @@ public static class ContinuousRotationValidation
     {
         EditorApplication.update -= Tick;
         if (error != null) Debug.LogException(error);
-        else Debug.Log("ContinuousRotationValidation PASSED: scene wiring, yaw wrap, gain, mode switching, and re-entry.");
+        else Debug.Log("ContinuousRotationValidation PASSED: original joystick speed, immediate stop, disabled head gain, enhanced modes, and switching.");
         SessionState.SetInt(Key + ".Result", error == null ? 0 : 1);
         EditorApplication.isPlaying = false;
     }

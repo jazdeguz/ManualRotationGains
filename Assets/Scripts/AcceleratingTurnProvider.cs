@@ -15,6 +15,15 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
     public float CurrentMultiplier { get; private set; } = 1f;
 
     private float angularVelocity;
+    public bool UseOriginalContinuousTurning { get; private set; }
+
+    public void SetOriginalContinuousTurning(bool value)
+    {
+        if (UseOriginalContinuousTurning == value) return;
+        UseOriginalContinuousTurning = value;
+        angularVelocity = 0f;
+        CurrentMultiplier = 1f;
+    }
 
     public void SetMaximumMultiplier(float value)
     {
@@ -38,6 +47,15 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
 
     protected override float GetTurnAmount(Vector2 input)
     {
+        if (UseOriginalContinuousTurning)
+        {
+            angularVelocity = 0f;
+            CurrentMultiplier = 1f;
+            // Jaz's initial scene used the stock ContinuousTurnProvider.
+            // No extra multiplier, acceleration, or release momentum.
+            return base.GetTurnAmount(Vector2.ClampMagnitude(input, 1f));
+        }
+
         if (Time.deltaTime <= 0f)
             return 0f;
 
