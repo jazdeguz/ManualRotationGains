@@ -6,7 +6,8 @@ using Mode = MovementModeSelector.MovementMode;
 
 // P##Coins.csv, written as each coin is collected. Every cell has a fixed meaning so files line up:
 // column 1 is the passenger role and column 2 the conductor role, whichever came first.
-// Row 1 participant, row 2 role, rows 3-7 Continuous Turn, 8-12 Joystick, 13-17 Tilt.
+// Row 1 participant, row 2 role, rows 3-7 Continuous Turn, 8-12 Joystick, 13-17 Tilt,
+// with column 3 naming the turn type of each of those rows.
 // Each turn type block holds seconds since that area started, one row per coin in name order.
 public static class StudyLog
 {
@@ -15,6 +16,7 @@ public static class StudyLog
     private const int HeaderRows = 2;
     private const int PassengerColumn = 0;
     private const int ConductorColumn = 1;
+    private const int TurnTypeColumn = 2;
 
     public static string FilePath => ParticipantFile("Coins");
 
@@ -47,8 +49,9 @@ public static class StudyLog
                 string[] lines = File.ReadAllLines(FilePath);
                 for (int r = HeaderRows; r < cells.Length && r < lines.Length; r++)
                 {
+                    // Only the times carry over; labels always come from NewCells.
                     string[] existing = lines[r].Split(',');
-                    for (int c = 0; c < cells[r].Length && c < existing.Length; c++)
+                    for (int c = 0; c < TurnTypeColumn && c < existing.Length; c++)
                         cells[r][c] = existing[c];
                 }
             }
@@ -65,10 +68,12 @@ public static class StudyLog
     private static string[][] NewCells()
     {
         var cells = new string[HeaderRows + TurnBlocks.Length * CoinNames.Length][];
-        for (int r = 0; r < cells.Length; r++) cells[r] = new[] { "", "" };
+        for (int r = 0; r < cells.Length; r++) cells[r] = new[] { "", "", "" };
         cells[0][PassengerColumn] = MovementSessionSettings.ParticipantId.ToString(CultureInfo.InvariantCulture);
         cells[1][PassengerColumn] = "as passenger";
         cells[1][ConductorColumn] = "as conductor";
+        for (int r = HeaderRows; r < cells.Length; r++)
+            cells[r][TurnTypeColumn] = MainMenuController.TurnLabel(TurnBlocks[(r - HeaderRows) / CoinNames.Length]);
         return cells;
     }
 
