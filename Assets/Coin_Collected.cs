@@ -75,7 +75,14 @@ public class Coin_Collected : MonoBehaviour
         collected = true;
         if (scoreUI != null) scoreUI.AddCoin();
         if (audioManager != null) audioManager.PlaySFX(audioManager.coinCollectSound);
+        if (StudyFlow.Running && StudyFlow.Current.Scene == StudyScene.Area)
+            StudyLog.RecordCoin(name, Time.timeSinceLevelLoad);
         gameObject.SetActive(false);
         Destroy(gameObject);
+
+        // Inactive coins are skipped, so none found means this was the last one.
+        if (FindObjectsByType<Coin_Collected>(FindObjectsSortMode.None).Length > 0) return;
+        var menu = FindFirstObjectByType<HoldToReturnToMenu>();
+        if (menu != null) menu.Continue();
     }
 }
