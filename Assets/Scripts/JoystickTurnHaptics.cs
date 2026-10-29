@@ -104,6 +104,14 @@ public class JoystickTurnHaptics : MonoBehaviour
 
     private void OnTurnApplied(LocomotionProvider provider)
     {
+        // Continuous Rotation turns silently; other modes retain their ticks.
+        if (turnProvider is AcceleratingTurnProvider accelerating &&
+            accelerating.UseOriginalContinuousTurning)
+        {
+            ResetTicks();
+            return;
+        }
+
         if (!turnProvider.isActiveAndEnabled || adjustmentActive)
             return;
 

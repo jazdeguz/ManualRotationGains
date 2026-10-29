@@ -106,7 +106,10 @@ public static class CompactEnvironmentFinalization
         Check(all.Select(t => t.GetComponent<ReflectionProbe>()).Where(p => p != null).All(p => !p.enabled && p.bakedTexture == null && p.customBakedTexture == null),
             "An old reflection probe is still active or has a stale cubemap.");
         var terrains = all.Select(t => t.GetComponent<Terrain>()).Where(t => t != null).ToArray();
-        Check(terrains.Length == 16 && terrains.All(t => t.terrainData.size == new Vector3(500, 400, 500)), "Unexpected terrain size.");
+        var geometryBaseline = JsonUtility.FromJson<CompactTerrainResize.Baseline>(File.ReadAllText("Assets/CompactEnvironment/TerrainResizeBaseline.json"));
+        var scenery = JsonUtility.FromJson<CompactSceneryPlacement.Plan>(File.ReadAllText(CompactSceneryPlacement.BaselinePath));
+        Check(terrains.Length > 0 && terrains.All(t => Vector3.Distance(t.terrainData.size,
+            geometryBaseline.tiles.Single(b => b.guid == AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(t.terrainData))).size * scenery.terrainScale) < 0.001f), "Unexpected terrain size.");
         Check(terrains.All(t => t.GetComponent<TerrainCollider>() != null && t.GetComponent<TerrainCollider>().enabled &&
             t.GetComponent<TerrainCollider>().terrainData == t.terrainData), "Missing or mismatched terrain collider.");
         Check(all.Select(t => t.GetComponent<Coin_Collected>()).Count(c => c != null) == 5, "Missing coins.");
@@ -114,7 +117,7 @@ public static class CompactEnvironmentFinalization
         Check(rig.transform.lossyScale == Vector3.one && rig.Camera != null && rig.Camera.isActiveAndEnabled, "XR scale/camera changed.");
         foreach (var path in new[] { HoldToReturnToMenu.MenuScenePath, MainMenuController.GameplayScenePath })
             Check(EditorBuildSettings.scenes.Any(s => s.enabled && s.path == path), "Scene missing from build: " + path);
-        var report = new StringBuilder("PASS: compact scene saved/reloaded; realtime lighting references, 16 terrain/collider pairs, five coins, XR rig and menu/build scene references valid.\n");
+        var report = new StringBuilder("PASS: compact scene saved/reloaded; realtime lighting references, terrain/collider pairs, five coins, XR rig and menu/build scene references valid.\n");
         // Report actual collider clearance at the authored head position. This is
         // an obstruction check, not a substitute for physical headset traversal.
         Physics.SyncTransforms();

@@ -104,9 +104,9 @@ public static class ContinuousRotationValidation
                     selector.transform.localRotation = Quaternion.Euler(0f, 30f, 0f);
                     selector.SetMovementMode(MovementModeSelector.MovementMode.ContinuousRotation);
                     CheckOriginalMode();
-                    CheckTurn(Vector2.right, 2f * Time.deltaTime);
-                    CheckTurn(Vector2.left, -2f * Time.deltaTime);
-                    CheckTurn(new Vector2(0.5f, 0f), Time.deltaTime);
+                    CheckTurn(Vector2.right, 10f * Time.deltaTime);
+                    CheckTurn(Vector2.left, -10f * Time.deltaTime);
+                    CheckTurn(new Vector2(0.5f, 0f), 5f * Time.deltaTime);
                     CheckTurn(Vector2.zero, 0f);
                     Check(turn.CurrentMultiplier == 1f, "Original turning used the manual multiplier.");
                     head.localRotation = Quaternion.Euler(0f, 90f, 0f);
@@ -175,7 +175,7 @@ public static class ContinuousRotationValidation
     {
         EditorApplication.update -= Tick;
         if (error != null) Debug.LogException(error);
-        else Debug.Log("ContinuousRotationValidation PASSED: original joystick speed, immediate stop, disabled head gain, enhanced modes, and switching.");
+        else Debug.Log("ContinuousRotationValidation PASSED: 10-degree-per-second continuous joystick speed, immediate stop, disabled head gain, enhanced modes, and switching.");
         SessionState.SetInt(Key + ".Result", error == null ? 0 : 1);
         EditorApplication.isPlaying = false;
     }

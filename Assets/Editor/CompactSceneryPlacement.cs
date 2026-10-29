@@ -57,7 +57,7 @@ public static class CompactSceneryPlacement
         var terrains = all.Select(t => t.GetComponent<Terrain>()).Where(t => t != null).ToArray();
         var terrainBaseline = JsonUtility.FromJson<CompactTerrainResize.Baseline>(File.ReadAllText(TerrainBaselinePath));
         float scale = terrains[0].terrainData.size.x / terrainBaseline.tiles[0].size.x;
-        Check(scale > 0 && scale < 1 && terrains.Length == 16, "Expected the resized 16-tile terrain.");
+        Check(scale > 0 && scale < 1 && terrains.Length > 0, "Expected resized terrain tiles.");
         foreach (var t in terrains)
         {
             var original = terrainBaseline.tiles.Single(b => b.guid == AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(t.terrainData)));
@@ -135,6 +135,41 @@ public static class CompactSceneryPlacement
         File.WriteAllText(ReportPath, report.ToString());
         Debug.Log("COMPACT_SCENERY_SUCCESS\n" + report);
         SceneView.RepaintAll();
+    }
+
+    // Called only by the transaction that backs up the current scene and assets.
+    // The snapshot is current scenery on the newly resized terrain, so recent
+    // authoring edits are preserved rather than restored from the old manifest.
+    internal static void RebaseForReduction(float relativeScale, float absoluteScale)
+    {
+        var scene = SceneManager.GetActiveScene();
+        Check(scene.path == CompactTerrainResize.ScenePath && !scene.isDirty, "Save compact scene first.");
+        var all = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Transform>(true)).ToArray();
+        CacheIds(all);
+        var terrains = all.Select(t => t.GetComponent<Terrain>()).Where(t => t != null).ToArray();
+        var baseline = JsonUtility.FromJson<CompactTerrainResize.Baseline>(File.ReadAllText(TerrainBaselinePath));
+        var plan = BuildPlan(all, terrains, baseline.anchor, relativeScale);
+        plan.terrainScale = absoluteScale;
+        var rig = all.Select(t => t.GetComponent<XROrigin>()).Single(r => r != null);
+        var byId = all.ToDictionary(Id);
+        foreach (var placement in plan.placements)
+        {
+            if (byId[placement.id].GetComponent<Coin_Collected>() == null) continue;
+            Vector3 offset = placement.targetPosition - rig.transform.position;
+            offset.y = 0;
+            if (offset.magnitude >= 2.5f) continue;
+            if (offset.sqrMagnitude < 0.001f) offset = Vector3.right;
+            var target = rig.transform.position + offset.normalized * 2.5f;
+            placement.targetPosition.x = target.x;
+            placement.targetPosition.z = target.z;
+            var sample = placement.samplePoint + placement.targetPosition - placement.originalPosition;
+            placement.targetGround = Ground(terrains, sample);
+            placement.targetPosition.y = placement.originalPosition.y + placement.targetGround - placement.originalGround;
+            placement.rule += "; 2.5m spawn clearance";
+        }
+        File.WriteAllText(BaselinePath, JsonUtility.ToJson(plan, true));
+        AssetDatabase.ImportAsset(BaselinePath);
+        Execute(true);
     }
 
     static Plan BuildPlan(Transform[] all, Terrain[] terrains, Vector3 anchor, float scale)

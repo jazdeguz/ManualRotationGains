@@ -51,12 +51,16 @@ public sealed class CompactTerrainResize : EditorWindow
 
     public static void ApplyHalf() => Execute(0.5f, true);
 
-    public static void Execute(float scale, bool apply)
+    public static void Execute(float scale, bool apply) => ExecuteInternal(scale, apply, false);
+
+    internal static void ExecuteCoordinated(float scale) => ExecuteInternal(scale, true, true);
+
+    static void ExecuteInternal(float scale, bool apply, bool coordinated)
     {
         Require(!EditorApplication.isPlayingOrWillChangePlaymode && !Lightmapping.isRunning,
             "Exit Play mode and finish the lighting bake first.");
         Require(scale >= 0.1f && scale <= 1f && !float.IsNaN(scale), "Scale must be between 0.1 and 1.");
-        if (File.Exists(CompactSceneryPlacement.BaselinePath))
+        if (!coordinated && File.Exists(CompactSceneryPlacement.BaselinePath))
         {
             var scenery = JsonUtility.FromJson<CompactSceneryPlacement.Plan>(File.ReadAllText(CompactSceneryPlacement.BaselinePath));
             Require(Mathf.Abs(scale - scenery.terrainScale) < 0.0001f,
@@ -67,7 +71,7 @@ public sealed class CompactTerrainResize : EditorWindow
             "Open the compact scene by itself first.");
         Require(!scene.isDirty, "Save or revert pending scene edits before resizing.");
         var terrains = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<Terrain>(true)).ToArray();
-        Require(terrains.Length == 16, "Expected all 16 terrain tiles, including inactive tiles.");
+        Require(terrains.Length > 0, "No terrain tiles found, including inactive tiles.");
         foreach (var terrain in terrains)
         {
             Require(terrain.terrainData != null, "Missing TerrainData.");
@@ -80,10 +84,14 @@ public sealed class CompactTerrainResize : EditorWindow
             var collider = terrain.GetComponent<TerrainCollider>();
             Require(collider != null && collider.terrainData == terrain.terrainData, "Terrain/collider data mismatch.");
         }
-        Require(terrains.Select(t => t.terrainData).Distinct().Count() == 16, "Tiles must have distinct data assets.");
+        Require(terrains.Select(t => t.terrainData).Distinct().Count() == terrains.Length, "Tiles must have distinct data assets.");
         bool hasBaseline = File.Exists(BaselinePath);
         var baseline = hasBaseline ? JsonUtility.FromJson<Baseline>(File.ReadAllText(BaselinePath)) : Capture(terrains, scene);
-        Require(baseline != null && baseline.version == 1 && baseline.tiles.Length == 16, "Invalid baseline.");
+        Require(baseline != null && baseline.version == 1 && baseline.tiles.Length >= terrains.Length, "Invalid baseline.");
+        // A scene may intentionally contain only a subset of the original tiles.
+        var selectedGuids = terrains.Select(t => AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(t.terrainData))).ToHashSet();
+        baseline.tiles = baseline.tiles.Where(t => selectedGuids.Contains(t.guid)).ToArray();
+        Require(baseline.tiles.Length == terrains.Length, "A scene tile is missing from the original baseline.");
         foreach (var terrain in terrains)
         {
             var tile = FindTile(baseline, terrain);
@@ -185,7 +193,7 @@ public sealed class CompactTerrainResize : EditorWindow
 
     static void Validate(Terrain[] terrains, Baseline baseline, float scale, StringBuilder report)
     {
-        Require(terrains.Length == 16, "Tile count changed.");
+        Require(terrains.Length == baseline.tiles.Length, "Tile count changed.");
         foreach (var terrain in terrains)
         {
             var tile = FindTile(baseline, terrain);
@@ -196,9 +204,12 @@ public sealed class CompactTerrainResize : EditorWindow
                 "Heightmap resolution or tree count changed.");
         }
         float seamError = SeamError(terrains, out int edges);
-        Require(edges == 24, "Expected 24 shared edges in the 4 x 4 grid.");
+        int expectedEdges = baseline.tiles.Sum(t => baseline.tiles.Count(other =>
+            (Mathf.Abs(other.position.x - (t.position.x + t.size.x)) < 0.01f && Mathf.Abs(other.position.z - t.position.z) < 0.01f) ||
+            (Mathf.Abs(other.position.z - (t.position.z + t.size.z)) < 0.01f && Mathf.Abs(other.position.x - t.position.x) < 0.01f)));
+        Require(edges == expectedEdges, "Terrain adjacency changed.");
         Require(seamError <= baseline.seamError * scale + 0.002f, "Terrain seam height mismatch increased.");
-        report.AppendLine($"PASS: 16 tile dimensions/positions and colliders; 24 shared edges; maximum seam height difference {seamError:F6} m (baseline {baseline.seamError:F6} m).");
+        report.AppendLine($"PASS: {terrains.Length} tile dimensions/positions and colliders; {edges} shared edges; maximum seam height difference {seamError:F6} m (baseline {baseline.seamError:F6} m).");
     }
 
     static float SeamError(Terrain[] terrains, out int edges)

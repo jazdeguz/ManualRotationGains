@@ -89,8 +89,9 @@ public static class CompactGameplayValidation
                 if (selector == null) return;
                 Check(selector.movementMode == Modes[mode], "Menu movement choice not applied.");
                 bool continuous = Modes[mode] == MovementModeSelector.MovementMode.ContinuousRotation;
-                Check(selector.continuousRotation.enabled == continuous && selector.turnProvider.enabled != continuous &&
+                Check(!selector.continuousRotation.enabled && selector.turnProvider.enabled &&
                     selector.redirectionController.enabled != continuous, "Incorrect enabled turn components.");
+                Check(((AcceleratingTurnProvider)selector.turnProvider).UseOriginalContinuousTurning == continuous, "Incorrect stock joystick mode.");
                 bool controller = Modes[mode] == MovementModeSelector.MovementMode.UseRotation;
                 Check((selector.turnProvider.leftHandTurnInput.bypass != null) == controller &&
                     (selector.turnProvider.rightHandTurnInput.bypass != null) == controller, "Incorrect controller turn routing.");
@@ -100,7 +101,8 @@ public static class CompactGameplayValidation
                 Check(coins.Length == 5, "A new run did not restore all five coins.");
                 score = CoinScoreUI.ForCamera(rig.Camera);
                 Check(score.Score == 0, "A new run retained the previous score.");
-                Check(Terrain.activeTerrains.Length == 16 && Terrain.activeTerrains.All(t => t.terrainData.size.x == 500), "Loaded wrong terrain.");
+                var terrainPlan = JsonUtility.FromJson<CompactSceneryPlacement.Plan>(File.ReadAllText(CompactSceneryPlacement.BaselinePath));
+                Check(Terrain.activeTerrains.Length > 0 && Terrain.activeTerrains.All(t => Mathf.Approximately(t.terrainData.size.x, 1000f * terrainPlan.terrainScale)), "Loaded wrong terrain.");
                 coin = coins.OrderBy(c => c.name).First();
                 // Simulate walking into range by moving the rig once, then invoking
                 // the real distance-based pickup. Tracking/input hardware is not simulated.
@@ -119,7 +121,7 @@ public static class CompactGameplayValidation
                 Check(hold != null && hold.enabled, "Missing return handler.");
                 // Hold timing/cancellation is covered by MenuReturnValidation. Here
                 // exercise the same transition method after a completed hold.
-                typeof(HoldToReturnToMenu).GetMethod("ReturnToMenu", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(hold, null);
+                hold.ReturnToMenu();
                 Next(3);
             }
             else if (stage == 3)

@@ -51,9 +51,13 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
         {
             angularVelocity = 0f;
             CurrentMultiplier = 1f;
-            // Jaz's initial scene used the stock ContinuousTurnProvider.
-            // No extra multiplier, acceleration, or release momentum.
-            return base.GetTurnAmount(Vector2.ClampMagnitude(input, 1f));
+            // Keep stock input handling and immediate stopping, at five times the
+            // configured horizontal speed. Preserve optional turn-around angles.
+            Vector2 continuousInput = Vector2.ClampMagnitude(input, 1f);
+            float continuousTurn = base.GetTurnAmount(continuousInput);
+            Cardinal direction = CardinalUtility.GetNearestCardinal(continuousInput);
+            return direction == Cardinal.East || direction == Cardinal.West
+                ? continuousTurn * 5f : continuousTurn;
         }
 
         if (Time.deltaTime <= 0f)
