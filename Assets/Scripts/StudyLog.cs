@@ -6,13 +6,18 @@ using Mode = MovementModeSelector.MovementMode;
 
 // P##Coins.csv, written as each coin is collected. Every cell has a fixed meaning so files line up:
 // column 1 is the passenger role and column 2 the conductor role, whichever came first.
-// Row 1 participant, row 2 role, rows 3-7 Continuous Turn, 8-12 Joystick, 13-17 Tilt,
+// Row 1 participant, row 2 role, rows 3-17 Continuous Turn, 18-32 Joystick, 33-47 Tilt,
 // with column 3 naming the turn type of each of those rows.
 // Each turn type block holds seconds since that area started, one row per coin in name order.
 public static class StudyLog
 {
     private static readonly Mode[] TurnBlocks = { Mode.ContinuousRotation, Mode.UseJoystick, Mode.UseRotation };
-    private static readonly string[] CoinNames = { "coin", "coin (2)", "coin (3)", "coin (4)", "coin (5)" };
+    private static readonly string[] CoinNames =
+    {
+        "coin", "coin (2)", "coin (3)", "coin (4)", "coin (5)",
+        "coin (6)", "coin (7)", "coin (8)", "coin (9)", "coin (10)",
+        "coin (11)", "coin (12)", "coin (13)", "coin (14)", "coin (15)"
+    };
     private const int HeaderRows = 2;
     private const int PassengerColumn = 0;
     private const int ConductorColumn = 1;
