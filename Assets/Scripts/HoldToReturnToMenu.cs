@@ -6,12 +6,17 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.XR;
 
+// Runs before ManualTurnAdjustment so a B press used to leave can stop it first.
+[DefaultExecutionOrder(-230)]
 public sealed class HoldToReturnToMenu : MonoBehaviour
 {
     public const string MenuScenePath = "Assets/Scenes/MainMenu.unity";
     [SerializeField, Min(0.25f)] private float holdDuration = 2f;
+    [Tooltip("Return to the menu immediately when B on the right controller is pressed. During the study, B always moves to the next step.")]
+    [SerializeField] private bool pressBToReturn;
 
     private readonly MenuReturnHold hold = new MenuReturnHold();
+    private readonly BButtonPress bButton = new BButtonPress();
     private GameObject panel;
     private Text label;
     private Image progress;
@@ -38,6 +43,7 @@ public sealed class HoldToReturnToMenu : MonoBehaviour
         var device = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         bool pressed = device.isValid && device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.menuButton, out bool menu) && menu;
         pressed |= Keyboard.current != null && Keyboard.current.escapeKey.isPressed;
+        bool bPressed = (pressBToReturn || StudyFlow.Running) && bButton.Read();
 
         if (!focused || paused)
         {
@@ -46,6 +52,14 @@ public sealed class HoldToReturnToMenu : MonoBehaviour
         }
 
         if (Time.unscaledTime < errorUntil) { hold.Reset(); return; }
+        if (bPressed)
+        {
+            // B also raises the manual turn speed; keep this press from changing it.
+            var adjustment = GetComponent<ManualTurnAdjustment>();
+            if (adjustment != null) adjustment.enabled = false;
+            Continue();
+            return;
+        }
         bool complete = hold.Tick(pressed, Time.unscaledDeltaTime, Mathf.Max(0.25f, holdDuration));
         panel.SetActive(hold.Elapsed > 0f);
         if (hold.Elapsed > 0f)
@@ -56,29 +70,49 @@ public sealed class HoldToReturnToMenu : MonoBehaviour
         if (complete) ReturnToMenu();
     }
 
-    private void ReturnToMenu()
+    /// <summary>Moves on to the next study step, or back to the menu outside the study.</summary>
+    public void Continue()
     {
-        if (!Application.CanStreamedLevelBeLoaded(MenuScenePath))
+        if (loading || panel == null) return;
+        if (!StudyFlow.Running || !StudyFlow.Advance())
         {
-            ShowError("Main Menu is missing from the build scene list.");
+            ReturnToMenu();
             return;
         }
+        StudyStep step = StudyFlow.Current;
+        MovementSessionSettings.Select(step.Mode);
+        Load(step.ScenePath, step.Scene == StudyScene.Menu ? "Loading menu..." : "Loading...");
+    }
+
+    public void ReturnToMenu()
+    {
+        if (loading || panel == null) return;
         var selector = GetComponent<MovementModeSelector>();
         if (selector != null) MovementSessionSettings.Select(selector.movementMode);
+        Load(MenuScenePath, "Loading menu...");
+    }
+
+    private void Load(string scenePath, string message)
+    {
+        if (!Application.CanStreamedLevelBeLoaded(scenePath))
+        {
+            ShowError(scenePath + " is missing from the build scene list.");
+            return;
+        }
         loading = true;
         panel.SetActive(true);
-        label.text = "Loading menu...";
+        label.text = message;
         SetProgress(1f);
         try
         {
-            if (SceneManager.LoadSceneAsync(MenuScenePath, LoadSceneMode.Single) == null)
-                throw new InvalidOperationException("Menu loading did not start.");
+            if (SceneManager.LoadSceneAsync(scenePath, LoadSceneMode.Single) == null)
+                throw new InvalidOperationException("Scene loading did not start.");
         }
         catch (Exception exception)
         {
             Debug.LogException(exception, this);
             loading = false;
-            ShowError("Could not load menu. Release and try again.");
+            ShowError("Could not load the next scene. Try again.");
         }
     }
 
@@ -167,5 +201,20 @@ public sealed class MenuReturnHold
     }
 
     public void Reset() { Elapsed = 0f; armed = false; }
+}
+
+/// <summary>Fires once per B press on the right controller; a press already held when this starts is ignored.</summary>
+public sealed class BButtonPress
+{
+    private bool held = true;
+
+    public bool Read()
+    {
+        var device = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        bool pressed = device.isValid && device.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out bool b) && b;
+        bool fired = pressed && !held;
+        held = pressed;
+        return fired;
+    }
 }
 

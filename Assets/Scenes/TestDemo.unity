@@ -2975,6 +2975,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   holdDuration: 2
+  pressBToReturn: 1
 --- !u!114 &9000000000107
 MonoBehaviour:
   m_ObjectHideFlags: 0
