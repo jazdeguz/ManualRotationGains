@@ -89,7 +89,7 @@ public class MainMenuController : MonoBehaviour
         TurnTypeOrder.text = order;
     }
 
-    private static string TurnLabel(MovementModeSelector.MovementMode mode)
+    public static string TurnLabel(MovementModeSelector.MovementMode mode)
     {
         return mode == MovementModeSelector.MovementMode.UseRotation ? "Tilt"
             : mode == MovementModeSelector.MovementMode.UseJoystick ? "Joystick" : "Continuous Turn";
