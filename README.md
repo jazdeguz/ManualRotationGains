@@ -22,8 +22,8 @@ To adjust the manual rotation type, go to `XR Origin > Movement Mode Selector (S
 - **Continuous Rotation**: Original steady joystick turning, stopping immediately on release.
 
 Continuous Rotation uses the stock joystick turn calculation from Jaz's initial
-project (`c61da11`). Full stick deflection turns at five times the configured turn speed
-(currently 10 degrees/second); partial deflection scales the speed proportionally.
+project (`c61da11`). Full stick deflection turns at a fixed
+30 degrees/second; partial deflection scales the speed proportionally.
 A held stick produces a steady speed, with no adjustable multiplier or release
 coasting. Head-turn gain and A/B/X/Y multiplier adjustments are inactive in this
 mode. Continuous Rotation does not produce turning haptic ticks.
@@ -39,13 +39,15 @@ scene list. The hold duration is configurable on XR Origin's
 
 In **Use Joystick** or **Use Tilt**, press **B or Y** to increase the maximum
 manual turn multiplier by **0.5**, or **A or X** to decrease it. The range is
-**1–8**, starting from the scene's configured **2** (4 degrees/second at full
-input). Adjust `Manual Turn Adjustment` on XR Origin to change the step or limits.
+**1–8**, starting from the scene's configured **2** (30 degrees/second at full
+input). Both modes use a 15-degree/second base speed, so each 0.5 multiplier
+step changes full-input speed by 7.5 degrees/second (range: 15?120 degrees/second).
+Adjust `Manual Turn Adjustment` on XR Origin to change the step or limits.
 Increasing gives **two short buzzes** on the controller pressed; decreasing gives
 **one**. No buzz plays at a limit. Turning ticks pause during this feedback.
 Buttons adjust once per press; opposing buttons cancel and simultaneous increases
 or decreases count as one step. The adjustment is retained across menu trips and
-resets when the application restarts. Continuous Rotation uses its fixed 10-degree-per-second joystick speed.
+resets when the application restarts. Continuous Rotation uses its fixed 30-degree-per-second joystick speed.
 
 ## Compact terrain: second reduction
 
@@ -76,3 +78,13 @@ at the bottom right. Each gameplay run starts at **03:00** and counts down to
 **00:00**, which advances to the next experiment step using the same action as
 collecting all coins (or returns to the menu outside an experiment). The countdown
 pauses when game time is paused and resets when the gameplay scene reloads.
+
+## Coin CSV layout
+
+Study recording supports `coin` and `coin (2)` through `coin (15)`, in numeric
+order. Each participant's `P##Coins.csv` contains 15 rows per turn type:
+rows 3-17 for Continuous Turn, 18-32 for Joystick, and 33-47 for Tilt.
+The first two columns hold passenger and conductor collection times in seconds;
+the third names the turn type. Uncollected coins remain blank.
+Start a fresh experiment after updating the APK to initialize this expanded
+layout. Export previous participant files first if you need to keep them.

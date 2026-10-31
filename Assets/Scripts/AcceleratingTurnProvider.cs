@@ -51,13 +51,15 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
         {
             angularVelocity = 0f;
             CurrentMultiplier = 1f;
-            // Keep stock input handling and immediate stopping, at five times the
-            // configured horizontal speed. Preserve optional turn-around angles.
+            // Keep continuous turning at 30 degrees/second independently of
+            // the enhanced modes' base speed, with stock directional handling.
             Vector2 continuousInput = Vector2.ClampMagnitude(input, 1f);
-            float continuousTurn = base.GetTurnAmount(continuousInput);
             Cardinal direction = CardinalUtility.GetNearestCardinal(continuousInput);
-            return direction == Cardinal.East || direction == Cardinal.West
-                ? continuousTurn * 5f : continuousTurn;
+            if (direction == Cardinal.East || direction == Cardinal.West)
+                return enableTurnLeftRight
+                    ? continuousInput.magnitude * Mathf.Sign(continuousInput.x) * 30f * Time.deltaTime
+                    : 0f;
+            return base.GetTurnAmount(continuousInput);
         }
 
         if (Time.deltaTime <= 0f)
