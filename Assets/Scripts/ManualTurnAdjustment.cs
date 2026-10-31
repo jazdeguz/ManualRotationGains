@@ -25,7 +25,8 @@ public sealed class ManualTurnAdjustment : MonoBehaviour
         haptics = GetComponent<JoystickTurnHaptics>();
         float lower = Mathf.Max(1f, minimum);
         provider.SetMaximumMultiplier(Mathf.Clamp(
-            MovementSessionSettings.ManualTurnMaximum ?? provider.maximumMultiplier,
+            MovementSessionSettings.ManualTurnMaximum ??
+                MovementSessionSettings.StartingTurnDegreesPerSecond / Mathf.Max(0.01f, Mathf.Abs(provider.turnSpeed)),
             lower, Mathf.Max(lower, maximum)));
     }
 

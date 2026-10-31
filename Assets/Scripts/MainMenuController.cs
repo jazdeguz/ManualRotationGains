@@ -35,9 +35,14 @@ public class MainMenuController : MonoBehaviour
     private readonly BButtonPress bButton = new BButtonPress();
     private MovementModeSelector.MovementMode selectedMode;
     private bool loading;
+    private GameObject settingsPanel;
+    private Text startingSpeedText;
+    private Button decreaseSpeedButton;
+    private Button increaseSpeedButton;
 
     private void Awake()
     {
+        BuildSettingsPage();
         rotationButton.onClick.AddListener(() => SelectMode(MovementModeSelector.MovementMode.UseRotation));
         joystickButton.onClick.AddListener(() => SelectMode(MovementModeSelector.MovementMode.UseJoystick));
         continuousButton.onClick.AddListener(() => SelectMode(MovementModeSelector.MovementMode.ContinuousRotation));
@@ -69,6 +74,7 @@ public class MainMenuController : MonoBehaviour
 
     private void ShowExperimentReady()
     {
+        settingsPanel.SetActive(false);
         homePanel.SetActive(false);
         customOrderPanel.SetActive(false);
         PIDSelectionPanel.SetActive(false);
@@ -98,6 +104,7 @@ public class MainMenuController : MonoBehaviour
     public void ShowChangePIDMenu()
     {
         if (loading) return;
+        settingsPanel.SetActive(false);
         homePanel.SetActive(false);
         PIDSelectionPanel.SetActive(true);
     }
@@ -105,6 +112,7 @@ public class MainMenuController : MonoBehaviour
     public void ShowCustomOrder()
     {
         if (loading) return;
+        settingsPanel.SetActive(false);
         homePanel.SetActive(false);
         customOrderPanel.SetActive(true);
         SelectMode(selectedMode);
@@ -115,11 +123,106 @@ public class MainMenuController : MonoBehaviour
     public void ShowHome()
     {
         if (loading) return;
+        settingsPanel.SetActive(false);
         customOrderPanel.SetActive(false);
         PIDSelectionPanel.SetActive(false);
         experimentReadyPanel.SetActive(false);
         homePanel.SetActive(true);
         SelectButton(customOrderButton);
+    }
+
+    private void BuildSettingsPage()
+    {
+        // Reuse the scene's UI style and existing world-space canvas for XR input.
+        settingsPanel = new GameObject("Settings", typeof(RectTransform));
+        settingsPanel.layer = homePanel.layer;
+        var panelRect = (RectTransform)settingsPanel.transform;
+        panelRect.SetParent(homePanel.transform.parent, false);
+        var homeRect = (RectTransform)homePanel.transform;
+        panelRect.anchorMin = homeRect.anchorMin;
+        panelRect.anchorMax = homeRect.anchorMax;
+        panelRect.pivot = homeRect.pivot;
+        panelRect.sizeDelta = homeRect.sizeDelta;
+        panelRect.anchoredPosition = homeRect.anchoredPosition;
+        settingsPanel.SetActive(false);
+
+        CreateSettingsButton(homePanel.transform, "Settings", new Vector2(0f, -180f),
+            new Vector2(820f, 100f), ShowSettings);
+        CreateSettingsText("Settings", 230f, 55f, 40);
+        CreateSettingsText("Starting gain (degrees per second)", 155f, 55f, 30);
+        startingSpeedText = CreateSettingsText("", 80f, 60f, 40);
+        decreaseSpeedButton = CreateSettingsButton(panelRect, "- 1", new Vector2(-210f, 0f),
+            new Vector2(380f, 75f), () => ChangeStartingSpeed(-1f));
+        increaseSpeedButton = CreateSettingsButton(panelRect, "+ 1", new Vector2(210f, 0f),
+            new Vector2(380f, 75f), () => ChangeStartingSpeed(1f));
+        CreateSettingsText("Joystick / Tilt speed at full input: 15-120 deg/s.\nSaved automatically between sessions.\nContinuous Rotation stays at 30 deg/s.",
+            -100f, 110f, 25);
+        CreateSettingsButton(panelRect, "Reset to 30", new Vector2(-210f, -220f),
+            new Vector2(380f, 75f), () => SetStartingSpeed(MovementSessionSettings.DefaultStartingSpeed));
+        CreateSettingsButton(panelRect, "Back", new Vector2(210f, -220f),
+            new Vector2(380f, 75f), ShowHome);
+    }
+
+    private Button CreateSettingsButton(Transform parent, string label, Vector2 position,
+        Vector2 size, UnityEngine.Events.UnityAction action)
+    {
+        Button button = Instantiate(customOrderButton, parent, false);
+        button.name = label;
+        button.onClick = new Button.ButtonClickedEvent();
+        button.onClick.AddListener(action);
+        Text buttonLabel = button.GetComponentInChildren<Text>(true);
+        buttonLabel.text = label;
+        buttonLabel.rectTransform.sizeDelta = new Vector2(size.x - 30f, 48f);
+        var rect = (RectTransform)button.transform;
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+        button.gameObject.SetActive(true);
+        return button;
+    }
+
+    private Text CreateSettingsText(string label, float y, float height, int fontSize)
+    {
+        Text text = Instantiate(statusText, settingsPanel.transform, false);
+        text.name = string.IsNullOrEmpty(label) ? "Starting speed" : label;
+        text.text = label;
+        text.fontSize = fontSize;
+        text.resizeTextForBestFit = false;
+        text.alignment = TextAnchor.MiddleCenter;
+        text.raycastTarget = false;
+        text.rectTransform.anchoredPosition = new Vector2(0f, y);
+        text.rectTransform.sizeDelta = new Vector2(820f, height);
+        text.gameObject.SetActive(true);
+        return text;
+    }
+
+    public void ShowSettings()
+    {
+        if (loading) return;
+        homePanel.SetActive(false);
+        customOrderPanel.SetActive(false);
+        PIDSelectionPanel.SetActive(false);
+        experimentReadyPanel.SetActive(false);
+        settingsPanel.SetActive(true);
+        RefreshStartingSpeed();
+        SelectButton(increaseSpeedButton.interactable ? increaseSpeedButton : decreaseSpeedButton);
+    }
+
+    private void ChangeStartingSpeed(float delta) =>
+        SetStartingSpeed(MovementSessionSettings.StartingTurnDegreesPerSecond + delta);
+
+    private void SetStartingSpeed(float value)
+    {
+        if (loading) return;
+        MovementSessionSettings.SaveStartingTurnSpeed(value);
+        RefreshStartingSpeed();
+    }
+
+    private void RefreshStartingSpeed()
+    {
+        float speed = MovementSessionSettings.StartingTurnDegreesPerSecond;
+        startingSpeedText.text = speed.ToString("0.#") + " deg/s";
+        decreaseSpeedButton.interactable = speed > MovementSessionSettings.MinimumStartingSpeed;
+        increaseSpeedButton.interactable = speed < MovementSessionSettings.MaximumStartingSpeed;
     }
 
     private static void SelectButton(Button button)
