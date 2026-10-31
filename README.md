@@ -7,13 +7,21 @@ How: Uses the joystick to turn left/right
 The main menu follows the headset, centred 2.2 metres in front of the player
 as they move and turn. This applies to every menu screen.
 
-The main menu opens with **Start Experiment** and **Custom Order**. Choose
+The main menu opens with **Start Experiment**, **Custom Order**, and **Settings**. Choose
 **Custom Order** to open the movement-selection menu and select a movement mode.
 **Play Game** launches the compact terrain environment; **Test Demo** launches
 the original orange-grid floor with the current movement controls. Both use your
 selected movement mode and support holding Menu to return. **Back** returns to
 the main menu without losing your choice.
 Start Experiment is disabled until the experiment flow is implemented.
+
+Open **Settings** to choose the starting gain for **Use Joystick** and **Use Tilt**
+in degrees per second at full input. Use **- 1** and **+ 1** to adjust between
+**15 and 120 degrees/second**, or **Reset to 30** to restore the default.
+Changes save automatically on the device and persist after closing the app.
+Changing this setting applies it to the next game or demo, replacing any current
+in-game adjustment. **Back** returns to the main menu. Continuous Rotation
+keeps its fixed 30-degree/second speed.
 
 To adjust the manual rotation type, go to `XR Origin > Movement Mode Selector (Script)` and edit the `Movement Mode`.
 
@@ -39,7 +47,7 @@ scene list. The hold duration is configurable on XR Origin's
 
 In **Use Joystick** or **Use Tilt**, press **B or Y** to increase the maximum
 manual turn multiplier by **0.5**, or **A or X** to decrease it. The range is
-**1–8**, starting from the scene's configured **2** (30 degrees/second at full
+**1–8**, starting from the saved Settings value (default: 30 degrees/second at full
 input). Both modes use a 15-degree/second base speed, so each 0.5 multiplier
 step changes full-input speed by 7.5 degrees/second (range: 15?120 degrees/second).
 Adjust `Manual Turn Adjustment` on XR Origin to change the step or limits.
@@ -47,7 +55,7 @@ Increasing gives **two short buzzes** on the controller pressed; decreasing give
 **one**. No buzz plays at a limit. Turning ticks pause during this feedback.
 Buttons adjust once per press; opposing buttons cancel and simultaneous increases
 or decreases count as one step. The adjustment is retained across menu trips and
-resets when the application restarts. Continuous Rotation uses its fixed 30-degree-per-second joystick speed.
+returns to the saved starting speed when the application restarts. Continuous Rotation uses its fixed 30-degree-per-second joystick speed.
 
 ## Compact terrain: second reduction
 

@@ -2,9 +2,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mode = MovementModeSelector.MovementMode;
 
-/// <summary>A menu choice lasts for this play session only.</summary>
+/// <summary>Session choices and the persistent starting manual turn speed.</summary>
 public static class MovementSessionSettings
 {
+    private const string StartingSpeedKey = "Movement.StartingTurnDegreesPerSecond";
+    public const float DefaultStartingSpeed = 30f;
+    public const float MinimumStartingSpeed = 15f;
+    public const float MaximumStartingSpeed = 120f;
+
+    public static float StartingTurnDegreesPerSecond => SanitizeStartingSpeed(
+        PlayerPrefs.GetFloat(StartingSpeedKey, DefaultStartingSpeed));
+
+    private static float SanitizeStartingSpeed(float value) =>
+        float.IsNaN(value) || float.IsInfinity(value) ? DefaultStartingSpeed
+            : Mathf.Clamp(value, MinimumStartingSpeed, MaximumStartingSpeed);
+
+    public static void SaveStartingTurnSpeed(float value)
+    {
+        PlayerPrefs.SetFloat(StartingSpeedKey, SanitizeStartingSpeed(value));
+        PlayerPrefs.Save();
+        // The next scene should use the newly chosen starting speed.
+        ManualTurnMaximum = null;
+    }
+
     // One row per participant, cycling every three participants.
     private static readonly Mode[][] TurnOrders =
     {
