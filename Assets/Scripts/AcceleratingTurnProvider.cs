@@ -5,8 +5,8 @@ using UnityEngine.XR.Interaction.Toolkit.Locomotion.Turning;
 public class AcceleratingTurnProvider : ContinuousTurnProvider
 {
     [Header("Joystick Deflection Amplification")]
-    [Tooltip("Multiplier at full joystick deflection. Amplification increases from 1 near the center to this value at the edge.")]
-    [Min(1f)] public float maximumMultiplier = 4f;
+    [Tooltip("Multiplier at full joystick deflection. Values above 1 increase amplification toward the edge; values below 1 scale the speed uniformly.")]
+    [Min(0.01f)] public float maximumMultiplier = 4f;
 
     [Header("Release Deceleration")]
     [Tooltip("Turn speed lost per second when the stick returns toward center or is released. Lower values coast longer.")]
@@ -27,14 +27,14 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
 
     public void SetMaximumMultiplier(float value)
     {
-        maximumMultiplier = Mathf.Max(1f, value);
+        maximumMultiplier = Mathf.Max(0.01f, value);
         ClampAngularVelocity();
         CurrentMultiplier = Mathf.Min(CurrentMultiplier, maximumMultiplier);
     }
 
     private void ClampAngularVelocity()
     {
-        float limit = Mathf.Abs(turnSpeed) * Mathf.Max(1f, maximumMultiplier);
+        float limit = Mathf.Abs(turnSpeed) * Mathf.Max(0.01f, maximumMultiplier);
         angularVelocity = Mathf.Clamp(angularVelocity, -limit, limit);
     }
 
@@ -51,13 +51,14 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
         {
             angularVelocity = 0f;
             CurrentMultiplier = 1f;
-            // Keep continuous turning at 30 degrees/second independently of
-            // the enhanced modes' base speed, with stock directional handling.
+            // Use the saved full-input speed with stock directional handling.
+            // In-game multiplier adjustments only affect the enhanced modes.
             Vector2 continuousInput = Vector2.ClampMagnitude(input, 1f);
             Cardinal direction = CardinalUtility.GetNearestCardinal(continuousInput);
             if (direction == Cardinal.East || direction == Cardinal.West)
                 return enableTurnLeftRight
-                    ? continuousInput.magnitude * Mathf.Sign(continuousInput.x) * 30f * Time.deltaTime
+                    ? continuousInput.magnitude * Mathf.Sign(continuousInput.x) *
+                        MovementSessionSettings.StartingTurnDegreesPerSecond * Time.deltaTime
                     : 0f;
             return base.GetTurnAmount(continuousInput);
         }
@@ -99,7 +100,9 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
         // The base turn already scales with stick magnitude. Increase its
         // gain with deflection for finer control near center and faster turns
         // near the edge, independent of how long the stick has been held.
-        CurrentMultiplier = Mathf.Lerp(1f, Mathf.Max(1f, maximumMultiplier),
+        // Below the base speed, scale uniformly to keep partial input slower
+        // than full input and avoid exceeding the selected speed.
+        CurrentMultiplier = Mathf.Lerp(Mathf.Min(1f, Mathf.Max(0.01f, maximumMultiplier)), Mathf.Max(0.01f, maximumMultiplier),
             input.magnitude);
         float amplifiedTurn = turnAmount * CurrentMultiplier;
         float targetVelocity = amplifiedTurn / Time.deltaTime;

@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.XR;
 
-// Runs before ManualTurnAdjustment so a B press used to leave can stop it first.
+// Process menu transitions before the frame's locomotion input.
 [DefaultExecutionOrder(-230)]
 public sealed class HoldToReturnToMenu : MonoBehaviour
 {
@@ -54,9 +54,6 @@ public sealed class HoldToReturnToMenu : MonoBehaviour
         if (Time.unscaledTime < errorUntil) { hold.Reset(); return; }
         if (bPressed)
         {
-            // B also raises the manual turn speed; keep this press from changing it.
-            var adjustment = GetComponent<ManualTurnAdjustment>();
-            if (adjustment != null) adjustment.enabled = false;
             Continue();
             return;
         }
