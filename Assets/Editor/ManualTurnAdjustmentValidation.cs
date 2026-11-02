@@ -37,7 +37,7 @@ public static class ManualTurnAdjustmentValidation
             finally { UnityEngine.Object.DestroyImmediate(rig); }
             ValidateSession();
             File.WriteAllText("Logs/manual-turn-adjustment-validation.txt",
-                "PASS: All four buttons, press edges, simultaneous input, reconnect/reset, limits, step sizes, signed momentum clamp and session reset/retention. Hardware haptic patterns still require headset testing.");
+                "PASS: X/Y adjustments, A/B ignored, press edges, simultaneous input, reconnect/reset, limits, step sizes, signed momentum clamp and session reset/retention. Hardware haptic patterns still require headset testing.");
             Debug.Log("Manual turn adjustment validation passed.");
         }
         catch (Exception exception)
@@ -50,25 +50,29 @@ public static class ManualTurnAdjustmentValidation
     public static void ValidateButtons()
     {
         var state = new ManualTurnButtonState();
-        Check(state.Read(8, out _) == 0, "Startup held button must not fire.");
-        foreach (int button in new[] { 1, 2, 4, 8 })
+        Check(state.Read(2, out _) == 0, "Startup held button must not fire.");
+        foreach (int button in new[] { 1, 2 })
         {
             state.Read(0, out _);
             Check(state.Read(button, out int hands) == ((button & 10) != 0 ? 1 : -1), "Wrong button direction.");
-            Check(hands == (button < 4 ? 1 : 2), "Feedback on wrong hand.");
+            Check(hands == 1, "Feedback must stay on the left hand.");
             Check(state.Read(button, out _) == 0, "Held button repeated.");
         }
+        foreach (int rightButtons in new[] { 4, 8, 12 })
+        {
+            state.Read(0, out _);
+            Check(state.Read(rightButtons, out int hands) == 0 && hands == 0, "A/B must not adjust gain or buzz.");
+            Check(state.Read(rightButtons | 2, out hands) == 1 && hands == 1, "A/B must not block Y.");
+            state.Read(rightButtons, out _);
+            Check(state.Read(rightButtons | 1, out hands) == -1 && hands == 1, "A/B must not block X.");
+        }
         state.Read(0, out _);
-        Check(state.Read(10, out int both) == 1 && both == 3, "Both increases must combine.");
-        state.Read(0, out _);
-        Check(state.Read(5, out both) == -1 && both == 3, "Both decreases must combine.");
-        state.Read(0, out _);
-        Check(state.Read(9, out _) == 0, "Opposing buttons must cancel.");
-        Check(state.Read(8, out _) == 0, "Releasing opposing button must not create an edge.");
+        Check(state.Read(3, out _) == 0, "Opposing buttons must cancel.");
+        Check(state.Read(2, out _) == 0, "Releasing opposing button must not create an edge.");
         state.Reset();
-        Check(state.Read(8, out _) == 0, "Reset must require release.");
+        Check(state.Read(2, out _) == 0, "Reset must require release.");
         state.Read(0, out _, 3);
-        Check(state.Read(8, out int right, 3) == 1 && right == 2, "Disconnected left controller must not block right.");
+        Check(state.Read(8, out int right, 3) == 0 && right == 0, "Disconnected left controller must not enable B adjustment.");
         Check(state.Read(2, out _) == 0, "Reconnect while held must not fire.");
         state.Read(0, out _);
         Check(state.Read(2, out _) == 1, "Reconnect after release must work.");

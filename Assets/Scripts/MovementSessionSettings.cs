@@ -7,7 +7,7 @@ public static class MovementSessionSettings
 {
     private const string StartingSpeedKey = "Movement.StartingTurnDegreesPerSecond";
     public const float DefaultStartingSpeed = 30f;
-    public const float MinimumStartingSpeed = 15f;
+    public const float MinimumStartingSpeed = 5f;
     public const float MaximumStartingSpeed = 120f;
 
     public static float StartingTurnDegreesPerSecond => SanitizeStartingSpeed(

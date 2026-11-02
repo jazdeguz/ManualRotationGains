@@ -39,10 +39,18 @@ public class MainMenuController : MonoBehaviour
     private Text startingSpeedText;
     private Button decreaseSpeedButton;
     private Button increaseSpeedButton;
+    private GameObject resumePanel;
+    private Button resumeButton;
+    private Text resumeStepText;
+    private Text resumeMessage;
+    private Button previousStepButton;
+    private Button nextStepButton;
+    private int resumeStep;
 
     private void Awake()
     {
         BuildSettingsPage();
+        BuildResumePage();
         rotationButton.onClick.AddListener(() => SelectMode(MovementModeSelector.MovementMode.UseRotation));
         joystickButton.onClick.AddListener(() => SelectMode(MovementModeSelector.MovementMode.UseJoystick));
         continuousButton.onClick.AddListener(() => SelectMode(MovementModeSelector.MovementMode.ContinuousRotation));
@@ -68,7 +76,7 @@ public class MainMenuController : MonoBehaviour
 
     private void Update()
     {
-        if (StudyFlow.Running && bButton.Read())
+        if (StudyFlow.Running && experimentReadyPanel.activeSelf && bButton.Read())
             ContinueStudy();
     }
 
@@ -93,6 +101,7 @@ public class MainMenuController : MonoBehaviour
         for (int i = 0; i < MovementSessionSettings.TurnOrder.Count; i++)
             order += "\n" + (i + 1) + ". " + TurnLabel(MovementSessionSettings.TurnOrder[i]);
         TurnTypeOrder.text = order;
+        resumeButton.gameObject.SetActive(StudyFlow.CanResume);
     }
 
     public static string TurnLabel(MovementModeSelector.MovementMode mode)
@@ -104,9 +113,11 @@ public class MainMenuController : MonoBehaviour
     public void ShowChangePIDMenu()
     {
         if (loading) return;
+        resumePanel.SetActive(false);
         settingsPanel.SetActive(false);
         homePanel.SetActive(false);
         PIDSelectionPanel.SetActive(true);
+        UpdatePID(0);
     }
 
     public void ShowCustomOrder()
@@ -123,6 +134,7 @@ public class MainMenuController : MonoBehaviour
     public void ShowHome()
     {
         if (loading) return;
+        resumePanel.SetActive(false);
         settingsPanel.SetActive(false);
         customOrderPanel.SetActive(false);
         PIDSelectionPanel.SetActive(false);
@@ -155,7 +167,7 @@ public class MainMenuController : MonoBehaviour
             new Vector2(380f, 75f), () => ChangeStartingSpeed(-1f));
         increaseSpeedButton = CreateSettingsButton(panelRect, "+ 1", new Vector2(210f, 0f),
             new Vector2(380f, 75f), () => ChangeStartingSpeed(1f));
-        CreateSettingsText("Joystick / Tilt speed at full input: 15-120 deg/s.\nSaved automatically between sessions.\nContinuous Rotation stays at 30 deg/s.",
+        CreateSettingsText("Speed at full input: 5-120 deg/s.\nApplies to Joystick, Tilt, and Continuous Rotation.\nSaved automatically between sessions.",
             -100f, 110f, 25);
         CreateSettingsButton(panelRect, "Reset to 30", new Vector2(-210f, -220f),
             new Vector2(380f, 75f), () => SetStartingSpeed(MovementSessionSettings.DefaultStartingSpeed));
@@ -180,9 +192,9 @@ public class MainMenuController : MonoBehaviour
         return button;
     }
 
-    private Text CreateSettingsText(string label, float y, float height, int fontSize)
+    private Text CreateSettingsText(string label, float y, float height, int fontSize, Transform parent = null)
     {
-        Text text = Instantiate(statusText, settingsPanel.transform, false);
+        Text text = Instantiate(statusText, parent != null ? parent : settingsPanel.transform, false);
         text.name = string.IsNullOrEmpty(label) ? "Starting speed" : label;
         text.text = label;
         text.fontSize = fontSize;
@@ -193,6 +205,87 @@ public class MainMenuController : MonoBehaviour
         text.rectTransform.sizeDelta = new Vector2(820f, height);
         text.gameObject.SetActive(true);
         return text;
+    }
+
+    private void BuildResumePage()
+    {
+        resumePanel = new GameObject("Resume experiment", typeof(RectTransform));
+        resumePanel.layer = homePanel.layer;
+        var rect = (RectTransform)resumePanel.transform;
+        rect.SetParent(homePanel.transform.parent, false);
+        rect.sizeDelta = ((RectTransform)homePanel.transform).sizeDelta;
+        resumePanel.SetActive(false);
+
+        // Fit all three actions along the existing PID screen's bottom row.
+        var startRect = (RectTransform)startStudyButton.transform;
+        startRect.anchoredPosition = new Vector2(0f, -265f);
+        startRect.sizeDelta = new Vector2(260f, 66f);
+        ((RectTransform)PIDBackButton.transform).anchoredPosition = new Vector2(-280f, -265f);
+        resumeButton = CreateSettingsButton(PIDSelectionPanel.transform, "Resume", new Vector2(280f, -265f),
+            new Vector2(260f, 66f), ShowResume);
+        CreateSettingsText("Resume experiment", 230f, 55f, 36, rect);
+        resumeStepText = CreateSettingsText("", 100f, 150f, 30, rect);
+        previousStepButton = CreateSettingsButton(rect, "Previous step", new Vector2(-210f, -20f),
+            new Vector2(380f, 70f), () => ChangeResumeStep(-1));
+        nextStepButton = CreateSettingsButton(rect, "Next step", new Vector2(210f, -20f),
+            new Vector2(380f, 70f), () => ChangeResumeStep(1));
+        resumeMessage = CreateSettingsText("", -120f, 110f, 23, rect);
+        CreateSettingsButton(rect, "Back", new Vector2(-210f, -240f),
+            new Vector2(380f, 70f), ShowChangePIDMenu);
+        CreateSettingsButton(rect, "Resume this step", new Vector2(210f, -240f),
+            new Vector2(380f, 70f), ResumeStudy);
+    }
+
+    private void ShowResume()
+    {
+        if (loading || !StudyFlow.CanResume) return;
+        PIDSelectionPanel.SetActive(false);
+        resumePanel.SetActive(true);
+        resumeStep = Mathf.Clamp(StudyFlow.SavedStep, 0, StudyFlow.GetSteps().Count - 1);
+        ChangeResumeStep(0);
+        SelectButton(nextStepButton.interactable ? nextStepButton : previousStepButton);
+    }
+
+    private void ChangeResumeStep(int delta)
+    {
+        if (loading) return;
+        var schedule = StudyFlow.GetSteps();
+        resumeStep = Mathf.Clamp(resumeStep + delta, 0, schedule.Count - 1);
+        StudyStep step = schedule[resumeStep];
+        resumeStepText.text = "PID " + MovementSessionSettings.ParticipantId + " - Step " +
+            (resumeStep + 1) + " of " + schedule.Count + "\n" +
+            (step.AsConductor ? "Conductor" : "Passenger") + " - " + TurnLabel(step.Mode) + "\n" +
+            (step.Scene == StudyScene.Menu ? "Ready screen" : step.Scene == StudyScene.Demo ? "Test demo" : "Game area");
+        previousStepButton.interactable = resumeStep > 0;
+        nextStepButton.interactable = resumeStep < schedule.Count - 1;
+        resumeMessage.text = (StudyFlow.SavedStep >= schedule.Count ? "This experiment was previously completed.\n" : "") +
+            "Restarts the selected step from the beginning.\nReplayed areas replace their recordings.\nExisting files are backed up before resuming.";
+    }
+
+    private void ResumeStudy()
+    {
+        if (loading) return;
+        StudyStep step = StudyFlow.GetSteps()[resumeStep];
+        if (!Application.CanStreamedLevelBeLoaded(step.ScenePath))
+        {
+            resumeMessage.text = "This scene is unavailable. Add it to the build scene list.";
+            return;
+        }
+        try
+        {
+            StudyFlow.Resume(resumeStep);
+            if (step.Scene == StudyScene.Menu)
+            {
+                resumePanel.SetActive(false);
+                ShowExperimentReady();
+            }
+            else LoadStudyStep();
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+            resumeMessage.text = "Unable to resume. Check the saved participant files.\n" + exception.Message;
+        }
     }
 
     public void ShowSettings()

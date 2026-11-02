@@ -1,5 +1,7 @@
 # Manual Rotation Gains
 
+## Project Overview
+
 What: Rotates the camera relative to the current orientation of the user's head. 
 
 How: Uses the joystick to turn left/right 
@@ -7,21 +9,13 @@ How: Uses the joystick to turn left/right
 The main menu follows the headset, centred 2.2 metres in front of the player
 as they move and turn. This applies to every menu screen.
 
-The main menu opens with **Start Experiment**, **Custom Order**, and **Settings**. Choose
+The main menu opens with **Start Experiment** and **Custom Order**. Choose
 **Custom Order** to open the movement-selection menu and select a movement mode.
 **Play Game** launches the compact terrain environment; **Test Demo** launches
 the original orange-grid floor with the current movement controls. Both use your
 selected movement mode and support holding Menu to return. **Back** returns to
 the main menu without losing your choice.
 Start Experiment is disabled until the experiment flow is implemented.
-
-Open **Settings** to choose the starting gain for **Use Joystick** and **Use Tilt**
-in degrees per second at full input. Use **- 1** and **+ 1** to adjust between
-**15 and 120 degrees/second**, or **Reset to 30** to restore the default.
-Changes save automatically on the device and persist after closing the app.
-Changing this setting applies it to the next game or demo, replacing any current
-in-game adjustment. **Back** returns to the main menu. Continuous Rotation
-keeps its fixed 30-degree/second speed.
 
 To adjust the manual rotation type, go to `XR Origin > Movement Mode Selector (Script)` and edit the `Movement Mode`.
 
@@ -45,9 +39,9 @@ movement choice selected in the menu. Both scenes must be enabled in the build
 scene list. The hold duration is configurable on XR Origin's
 `Hold To Return To Menu` component.
 
-In **Use Joystick** or **Use Tilt**, press **B or Y** to increase the maximum
-manual turn multiplier by **0.5**, or **A or X** to decrease it. The range is
-**1–8**, starting from the saved Settings value (default: 30 degrees/second at full
+In **Use Joystick** or **Use Tilt**, press **Y** to increase the maximum
+manual turn multiplier by **0.5**, or **X** to decrease it. The range is
+**1–8**, starting from the scene's configured **2** (30 degrees/second at full
 input). Both modes use a 15-degree/second base speed, so each 0.5 multiplier
 step changes full-input speed by 7.5 degrees/second (range: 15?120 degrees/second).
 Adjust `Manual Turn Adjustment` on XR Origin to change the step or limits.
@@ -55,44 +49,114 @@ Increasing gives **two short buzzes** on the controller pressed; decreasing give
 **one**. No buzz plays at a limit. Turning ticks pause during this feedback.
 Buttons adjust once per press; opposing buttons cancel and simultaneous increases
 or decreases count as one step. The adjustment is retained across menu trips and
-returns to the saved starting speed when the application restarts. Continuous Rotation uses its fixed 30-degree-per-second joystick speed.
+resets when the application restarts. Continuous Rotation uses its fixed 30-degree-per-second joystick speed.
 
-## Compact terrain: second reduction
+## CSV column labels
 
-The gameplay scene retains its current four-tile layout. Its footprint is now
-**500 x 500 metres**, reduced from 1,000 x 1,000 metres. Each tile is
-250 x 250 metres with a 200-metre elevation range. This is another 50% reduction
-of the previous layout, or 25% of the original tile dimensions.
+Participant CSVs keep the participant ID on row 1 and descriptive column
+labels on row 2. Data begins on row 3.
 
-Scenery is repositioned from the current authored layout. Interactive objects,
-assembled prefab parts, and the XR rig retain their sizes. Water follows the
-terrain footprint and elevation. Coins keep a minimum 2.5-metre horizontal
-clearance from the rig spawn to avoid immediate pickup after compression.
+`P##Coins.csv` labels its three columns **Passenger collection time since area
+start (s)**, **Conductor collection time since area start (s)**, and **Turn type**.
+Each turn type has 15 coin rows in numeric coin-name order. Blank times mean the
+coin was not collected in that recorded run.
 
-**Tools > Terrain Environment > Reduce Compact Environment To 25 Percent**
-performs this coordinated change and is safe to rerun: it does not halve the
-scene again once the target scale is reached. Pre-change scene, scenery-plan,
-and terrain-data backups are in `Backups/CompactSecondReduction/`. Validation
-reports are in `Logs/compact-second-reduction.txt` and
-`Logs/compact-gameplay-validation.txt`.
+`P##Frames.csv` labels each of its six columns with the **turn type**, **role**,
+**elapsed time (s)**, and **head world XYZ (Unity units)**. Each cell contains
+`seconds (x, y, z)`, with elapsed time measured from the start of that area.
+Columns remain Continuous Turn, Joystick, and Tilt for Passenger, followed by
+the same three for Conductor.
 
-Rebuild the APK to test the new layout on the headset. Check destination travel
-times, crowded scenery, pier approaches, and coin reach before using it in a study.
+Resume accepts the previous column labels. Existing files receive the new
+labels when next written; their data positions and column order stay the same.
 
-## Gameplay countdown
+`P##TurnSpeed.csv` records one row per rendered frame throughout an experiment,
+including demos, game areas, and menu waits. Its labelled columns are:
 
-A headset-following timer appears at the bottom left, opposite the coin counter
-at the bottom right. Each gameplay run starts at **03:00** and counts down to
-**00:00**, which advances to the next experiment step using the same action as
-collecting all coins (or returns to the menu outside an experiment). The countdown
-pauses when game time is paused and resets when the gameplay scene reloads.
+- Participant PID, recording session ID, and UTC timestamp.
+- Session elapsed seconds, step number, scene, role, and turn type.
+- Scene elapsed seconds and frame duration in game-time seconds.
+- **Applied manual turn (deg/s)**: rotation applied by the turn provider during
+  that frame divided by frame duration. Positive is right/clockwise; negative is
+  left/counterclockwise. Partial input and release deceleration are included.
+- **Full-input speed limit (deg/s)**: the current maximum, including X/Y changes;
+  Continuous Rotation uses the Settings speed.
+- **Saved starting speed (deg/s)** and whether a turn provider is available.
 
-## Coin CSV layout
+This measures manual rig turning, not physical head rotation or additional
+head-turn redirection. Stationary frames record zero applied speed. Menu frames
+have no turn provider and leave the full-input limit blank. Scene time aligns
+with the coin pickup timestamps in game areas. Session elapsed time uses real
+time and resets on resume; the new session ID distinguishes resumed attempts.
 
-Study recording supports `coin` and `coin (2)` through `coin (15)`, in numeric
-order. Each participant's `P##Coins.csv` contains 15 rows per turn type:
-rows 3-17 for Continuous Turn, 18-32 for Joystick, and 33-47 for Tilt.
-The first two columns hold passenger and conductor collection times in seconds;
-the third names the turn type. Uncollected coins remain blank.
-Start a fresh experiment after updating the APK to initialize this expanded
-layout. Export previous participant files first if you need to keep them.
+Speed samples are appended in background batches about once a second, and
+flushed on app pause or experiment completion. A sudden crash can lose the last
+buffered/in-flight samples. Resume backs up this CSV, preserves its completed
+rows, removes an incomplete trailing row if necessary, and appends the new
+attempt. Starting a fresh experiment resets the speed CSV for that PID. No
+controller-connection diagnostics are included in this CSV.
+
+
+## Pull CSV files from the headset
+
+Connect the headset by USB, enable developer/USB debugging, and accept the USB
+debugging prompt inside the headset. Finish the experiment, or return to the
+menu and allow pending saves to finish, before exporting. Frame recordings are
+saved when an area closes; force-closing during an area loses those unsaved frames.
+
+Run these commands in **Windows PowerShell**. The ADB path below matches this
+project's Unity installation; change it if Unity is installed elsewhere.
+
+```powershell
+$adb = 'C:\Program Files\Unity\Hub\Editor\6000.6.6f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe'
+$package = 'com.UnityTechnologies.com.unity.template.urpblank'
+$remote = "/sdcard/Android/data/$package/files"
+& $adb devices
+& $adb shell ls -1 $remote
+```
+
+The headset should be listed as `device`. If it says `unauthorized`, accept the
+debugging prompt and run `devices` again. With multiple devices connected, add
+`-s SERIAL` after `$adb` in each command, using the headset serial from `devices`.
+
+Copy **all participant CSVs** into a new timestamped folder on the PC:
+
+```powershell
+$destination = Join-Path (Get-Location) ('CsvExports\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+New-Item -ItemType Directory -Path $destination -Force | Out-Null
+$remoteFiles = & $adb shell ls -1 $remote
+if ($LASTEXITCODE -ne 0) { throw 'Cannot list headset recordings. Check the connection and package name.' }
+foreach ($name in $remoteFiles) {
+    $name = $name.Trim()
+    if ($name -match '^P[0-9]+(Coins|Frames|TurnSpeed)\.csv$') {
+        & $adb pull "$remote/$name" $destination
+        if ($LASTEXITCODE -ne 0) { throw "Failed to pull $name" }
+    }
+}
+Get-ChildItem -LiteralPath $destination -Filter '*.csv'
+```
+
+Alternatively, after the setup above, pull just **PID 7** (change `P07` to the
+desired PID; for example `P01` or `P12`):
+
+```powershell
+$destination = Join-Path (Get-Location) ('CsvExports\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+New-Item -ItemType Directory -Path $destination -Force | Out-Null
+$participantPrefix = 'P07'
+& $adb pull "$remote/${participantPrefix}Coins.csv" $destination
+& $adb pull "$remote/${participantPrefix}Frames.csv" $destination
+& $adb pull "$remote/${participantPrefix}TurnSpeed.csv" $destination
+```
+
+The copy leaves the headset files in place. Older experiments may not have a
+`TurnSpeed.csv`. The CSV-only commands exclude tilt diagnostic logs and `.bak`
+files. To also export backups and other app files, use
+`& $adb pull $remote (Join-Path $destination 'HeadsetFiles')`.
+
+The package name comes from **Project Settings > Player > Android > Other
+Settings > Identification > Package Name**. If the installed APK uses a different
+package name, update `$package` and `$remote` before running the commands.
+The file location follows Unity's
+[Android persistent-data path](https://docs.unity.cn/6000.3/Documentation/ScriptReference/Application-persistentDataPath.html);
+file copying uses [ADB pull](https://developer.android.com/tools/adb#copyfiles).
+

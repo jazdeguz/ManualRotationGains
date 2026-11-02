@@ -14164,7 +14164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   step: 0.5
-  minimum: 1
+  minimum: 0.33333334
   maximum: 8
 --- !u!1 &9100000000001
 GameObject:

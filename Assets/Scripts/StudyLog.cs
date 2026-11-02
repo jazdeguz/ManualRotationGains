@@ -6,7 +6,7 @@ using Mode = MovementModeSelector.MovementMode;
 
 // P##Coins.csv, written as each coin is collected. Every cell has a fixed meaning so files line up:
 // column 1 is the passenger role and column 2 the conductor role, whichever came first.
-// Row 1 participant, row 2 role, rows 3-17 Continuous Turn, 18-32 Joystick, 33-47 Tilt,
+// Row 1 participant, row 2 column labels, rows 3-17 Continuous Turn, 18-32 Joystick, 33-47 Tilt,
 // with column 3 naming the turn type of each of those rows.
 // Each turn type block holds seconds since that area started, one row per coin in name order.
 public static class StudyLog
@@ -22,6 +22,12 @@ public static class StudyLog
     private const int PassengerColumn = 0;
     private const int ConductorColumn = 1;
     private const int TurnTypeColumn = 2;
+    private static readonly string[] Headers =
+    {
+        "Passenger collection time since area start (s)",
+        "Conductor collection time since area start (s)",
+        "Turn type",
+    };
 
     public static string FilePath => ParticipantFile("Coins");
 
@@ -34,6 +40,32 @@ public static class StudyLog
 
     //Starts a fresh file for the current participant.
     public static void Begin() => Write(NewCells());
+
+    public static void RestartArea()
+    {
+        if (!File.Exists(FilePath)) { Begin(); return; }
+        string[] lines = File.ReadAllLines(FilePath);
+        if (lines.Length < HeaderRows) throw new InvalidDataException("Invalid coin recording.");
+        lines[1] = string.Join(",", Headers);
+        int firstRow = HeaderRows + TurnTypeIndex(StudyFlow.Current.Mode) * CoinNames.Length;
+        int column = StudyFlow.Current.AsConductor ? ConductorColumn : PassengerColumn;
+        for (int r = firstRow; r < firstRow + CoinNames.Length && r < lines.Length; r++)
+        {
+            string[] cells = lines[r].Split(',');
+            if (cells.Length <= column) throw new InvalidDataException("Invalid coin recording.");
+            cells[column] = "";
+            lines[r] = string.Join(",", cells);
+        }
+        WriteLines(lines);
+    }
+
+    private static void WriteLines(string[] lines)
+    {
+        string temporary = FilePath + ".tmp";
+        File.WriteAllLines(temporary, lines);
+        if (File.Exists(FilePath)) File.Replace(temporary, FilePath, null, true);
+        else File.Move(temporary, FilePath);
+    }
 
     public static void RecordCoin(string coinName, float secondsIntoArea)
     {
@@ -75,8 +107,7 @@ public static class StudyLog
         var cells = new string[HeaderRows + TurnBlocks.Length * CoinNames.Length][];
         for (int r = 0; r < cells.Length; r++) cells[r] = new[] { "", "", "" };
         cells[0][PassengerColumn] = MovementSessionSettings.ParticipantId.ToString(CultureInfo.InvariantCulture);
-        cells[1][PassengerColumn] = "as passenger";
-        cells[1][ConductorColumn] = "as conductor";
+        cells[1] = (string[])Headers.Clone();
         for (int r = HeaderRows; r < cells.Length; r++)
             cells[r][TurnTypeColumn] = MainMenuController.TurnLabel(TurnBlocks[(r - HeaderRows) / CoinNames.Length]);
         return cells;
@@ -88,7 +119,7 @@ public static class StudyLog
         for (int r = 0; r < cells.Length; r++) lines[r] = string.Join(",", cells[r]);
         try
         {
-            File.WriteAllLines(FilePath, lines);
+            WriteLines(lines);
         }
         catch (Exception exception)
         {
