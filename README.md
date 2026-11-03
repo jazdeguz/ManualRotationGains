@@ -23,9 +23,12 @@ To adjust the manual rotation type, go to `XR Origin > Movement Mode Selector (S
 - **Use Joystick**: Turn with the joystick, including acceleration and release deceleration.
 - **Continuous Rotation**: Original steady joystick turning, stopping immediately on release.
 
+All three modes use inverted left/right controls: moving the joystick or tilting
+a controller left turns right; moving or tilting right turns left.
+
 Continuous Rotation uses the stock joystick turn calculation from Jaz's initial
-project (`c61da11`). Full stick deflection turns at a fixed
-30 degrees/second; partial deflection scales the speed proportionally.
+project (`c61da11`), with inverted left/right controls. Full stick deflection uses
+the saved starting speed (default **15 degrees/second**); partial deflection scales the speed proportionally.
 A held stick produces a steady speed, with no adjustable multiplier or release
 coasting. Head-turn gain and A/B/X/Y multiplier adjustments are inactive in this
 mode. Continuous Rotation does not produce turning haptic ticks.
@@ -41,15 +44,17 @@ scene list. The hold duration is configurable on XR Origin's
 
 In **Use Joystick** or **Use Tilt**, press **Y** to increase the maximum
 manual turn multiplier by **0.5**, or **X** to decrease it. The range is
-**1–8**, starting from the scene's configured **2** (30 degrees/second at full
-input). Both modes use a 15-degree/second base speed, so each 0.5 multiplier
-step changes full-input speed by 7.5 degrees/second (range: 15?120 degrees/second).
+**⅓–8**, starting from the saved starting speed (default **15 degrees/second** at full
+input, a multiplier of **1**). Both modes use a 15-degree/second base speed, so each 0.5 multiplier
+step changes full-input speed by 7.5 degrees/second (range: 5–120 degrees/second).
 Adjust `Manual Turn Adjustment` on XR Origin to change the step or limits.
 Increasing gives **two short buzzes** on the controller pressed; decreasing gives
 **one**. No buzz plays at a limit. Turning ticks pause during this feedback.
 Buttons adjust once per press; opposing buttons cancel and simultaneous increases
 or decreases count as one step. The adjustment is retained across menu trips and
-resets when the application restarts. Continuous Rotation uses its fixed 30-degree-per-second joystick speed.
+resets to the saved starting speed when the application restarts. Continuous Rotation uses the saved starting speed.
+Settings applies the starting speed to all three modes and saves it between sessions.
+Choose **Reset to 15** to restore the default; existing saved speeds are retained until changed.
 
 ## CSV column labels
 
@@ -106,6 +111,11 @@ saved when an area closes; force-closing during an area loses those unsaved fram
 
 Run these commands in **Windows PowerShell**. The ADB path below matches this
 project's Unity installation; change it if Unity is installed elsewhere.
+Copy only the commands inside the code blocks, without the surrounding backticks.
+Do not paste terminal prompts such as `PS C:\Users\ETG17>` or previous error
+output. PowerShell interprets `PS` as `Get-Process`, which causes misleading
+parameter errors. An error saying the expression after `&` is invalid can mean
+`$adb` has not been set; run the setup in the same PowerShell window first.
 
 ```powershell
 $adb = 'C:\Program Files\Unity\Hub\Editor\6000.6.6f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe'
@@ -119,7 +129,8 @@ The headset should be listed as `device`. If it says `unauthorized`, accept the
 debugging prompt and run `devices` again. With multiple devices connected, add
 `-s SERIAL` after `$adb` in each command, using the headset serial from `devices`.
 
-Copy **all participant CSVs** into a new timestamped folder on the PC:
+After running the setup above in the same PowerShell window, copy **all participant
+CSVs** into a new timestamped folder on the PC:
 
 ```powershell
 $destination = Join-Path (Get-Location) ('CsvExports\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
@@ -136,16 +147,25 @@ foreach ($name in $remoteFiles) {
 Get-ChildItem -LiteralPath $destination -Filter '*.csv'
 ```
 
-Alternatively, after the setup above, pull just **PID 7** (change `P07` to the
-desired PID; for example `P01` or `P12`):
+Alternatively, use this self-contained block to pull just **PID 4** (change `P04`
+to the desired PID; for example `P01` or `P12`). It includes the setup so it can
+be pasted into a new PowerShell window:
 
 ```powershell
+$adb = 'C:\Program Files\Unity\Hub\Editor\6000.6.6f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe'
+$package = 'com.UnityTechnologies.com.unity.template.urpblank'
+$remote = "/sdcard/Android/data/$package/files"
+& $adb devices
+
 $destination = Join-Path (Get-Location) ('CsvExports\' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
-$participantPrefix = 'P07'
+$participantPrefix = 'P04'
 & $adb pull "$remote/${participantPrefix}Coins.csv" $destination
 & $adb pull "$remote/${participantPrefix}Frames.csv" $destination
 & $adb pull "$remote/${participantPrefix}TurnSpeed.csv" $destination
+
+Write-Host "Export folder: $destination"
+Get-ChildItem -LiteralPath $destination -Filter '*.csv'
 ```
 
 The copy leaves the headset files in place. Older experiments may not have a
