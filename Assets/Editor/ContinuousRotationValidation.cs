@@ -104,9 +104,9 @@ public static class ContinuousRotationValidation
                     selector.transform.localRotation = Quaternion.Euler(0f, 30f, 0f);
                     selector.SetMovementMode(MovementModeSelector.MovementMode.ContinuousRotation);
                     CheckOriginalMode();
-                    CheckTurn(Vector2.right, 30f * Time.deltaTime);
-                    CheckTurn(Vector2.left, -30f * Time.deltaTime);
-                    CheckTurn(new Vector2(0.5f, 0f), 15f * Time.deltaTime);
+                    CheckTurn(Vector2.right, -MovementSessionSettings.StartingTurnDegreesPerSecond * Time.deltaTime);
+                    CheckTurn(Vector2.left, MovementSessionSettings.StartingTurnDegreesPerSecond * Time.deltaTime);
+                    CheckTurn(new Vector2(0.5f, 0f), -0.5f * MovementSessionSettings.StartingTurnDegreesPerSecond * Time.deltaTime);
                     CheckTurn(Vector2.zero, 0f);
                     Check(turn.CurrentMultiplier == 1f, "Original turning used the manual multiplier.");
                     head.localRotation = Quaternion.Euler(0f, 90f, 0f);
@@ -122,7 +122,8 @@ public static class ContinuousRotationValidation
                     Check(ReferenceEquals(turn.leftHandTurnInput.bypass, selector.leftHandRotationInput) &&
                         ReferenceEquals(turn.rightHandTurnInput.bypass, selector.rightHandRotationInput),
                         "Tilt input bypass was not restored.");
-                    CheckTurn(Vector2.right, 120f * Time.deltaTime);
+                    CheckTurn(Vector2.right, -120f * Time.deltaTime);
+                    CheckTurn(Vector2.left, 120f * Time.deltaTime);
                     Check(ReadTurn(Vector2.zero) > 0f, "Enhanced turning lost release coasting.");
                     selector.SetMovementMode(MovementModeSelector.MovementMode.ContinuousRotation);
                     CheckOriginalMode();
@@ -133,6 +134,9 @@ public static class ContinuousRotationValidation
                     selector.SetMovementMode(MovementModeSelector.MovementMode.UseJoystick);
                     Check(!turn.UseOriginalContinuousTurning && turn.leftHandTurnInput.bypass == null &&
                         turn.rightHandTurnInput.bypass == null, "Joystick mode was not restored.");
+                    CheckTurn(Vector2.left, 120f * Time.deltaTime);
+                    CheckTurn(Vector2.right, -120f * Time.deltaTime);
+                    Check(ReadTurn(Vector2.zero) < 0f, "Joystick coasting must preserve the inverted turn direction.");
                     selector.SetMovementMode(MovementModeSelector.MovementMode.ContinuousRotation);
                     selector.enabled = false;
                     Check(!turn.UseOriginalContinuousTurning && selector.redirectionController.enabled,
@@ -175,7 +179,7 @@ public static class ContinuousRotationValidation
     {
         EditorApplication.update -= Tick;
         if (error != null) Debug.LogException(error);
-        else Debug.Log("ContinuousRotationValidation PASSED: 30-degree-per-second continuous joystick speed, immediate stop, disabled head gain, enhanced modes, and switching.");
+        else Debug.Log("ContinuousRotationValidation PASSED: saved continuous joystick speed, immediate stop, disabled head gain, enhanced modes, and switching.");
         SessionState.SetInt(Key + ".Result", error == null ? 0 : 1);
         EditorApplication.isPlaying = false;
     }

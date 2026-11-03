@@ -47,6 +47,9 @@ public class AcceleratingTurnProvider : ContinuousTurnProvider
 
     protected override float GetTurnAmount(Vector2 input)
     {
+        // Invert horizontal joystick and tilt input for all three movement modes.
+        input.x = -input.x;
+
         if (UseOriginalContinuousTurning)
         {
             angularVelocity = 0f;

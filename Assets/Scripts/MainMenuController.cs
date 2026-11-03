@@ -169,7 +169,7 @@ public class MainMenuController : MonoBehaviour
             new Vector2(380f, 75f), () => ChangeStartingSpeed(1f));
         CreateSettingsText("Speed at full input: 5-120 deg/s.\nApplies to Joystick, Tilt, and Continuous Rotation.\nSaved automatically between sessions.",
             -100f, 110f, 25);
-        CreateSettingsButton(panelRect, "Reset to 30", new Vector2(-210f, -220f),
+        CreateSettingsButton(panelRect, $"Reset to {MovementSessionSettings.DefaultStartingSpeed:0}", new Vector2(-210f, -220f),
             new Vector2(380f, 75f), () => SetStartingSpeed(MovementSessionSettings.DefaultStartingSpeed));
         CreateSettingsButton(panelRect, "Back", new Vector2(210f, -220f),
             new Vector2(380f, 75f), ShowHome);

@@ -6,7 +6,7 @@ using Mode = MovementModeSelector.MovementMode;
 public static class MovementSessionSettings
 {
     private const string StartingSpeedKey = "Movement.StartingTurnDegreesPerSecond";
-    public const float DefaultStartingSpeed = 30f;
+    public const float DefaultStartingSpeed = 15f;
     public const float MinimumStartingSpeed = 5f;
     public const float MaximumStartingSpeed = 120f;
 
